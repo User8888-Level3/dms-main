@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realty Experts Agent Hub - Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            padding: 4rem;
+            padding-bottom: 8rem;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            position: fixed;
+            bottom: 3rem;
+            right: 3rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 3rem;
+            left: 3rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Slide Content Styles */
+        .slide-content {
+            max-width: 1400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 3rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h3 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 4rem;
+            font-weight: 400;
+        }
+
+        .presenter-info {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 3rem;
+        }
+
+        /* Card Styles */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .card h3 {
+            color: #f97316;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .card p, .card li {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card li::before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* Image Placeholder */
+        .image-placeholder {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 3px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        /* Slide Images */
+        .slide-image {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .slide-image:hover {
+            transform: scale(1.02);
+        }
+
+        .image-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* List Styles */
+        .feature-list {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            color: white;
+            font-size: 1.5rem;
+            padding: 1rem 0;
+            padding-left: 3rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .feature-list li::before {
+            content: "•";
+            position: absolute;
+            left: 1rem;
+            color: #f97316;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Callout Box */
+        .callout {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            padding: 2rem 3rem;
+            border-radius: 16px;
+            margin-top: 2rem;
+            box-shadow: 0 8px 32px rgba(249, 115, 22, 0.4);
+        }
+
+        .callout p {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Numbered Steps */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+            text-align: left;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -1.5rem;
+            left: 2rem;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 800;
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+        }
+
+        .step h3 {
+            margin-top: 1rem;
+            color: white;
+        }
+
+        .step p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #f97316 0%, #fbbf24 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Ensure slides with lots of content don't overflow */
+        .slide[data-slide="6"] .slide-content,
+        .slide[data-slide="8"] .slide-content {
+            justify-content: flex-start !important;
+        }
+
+        .slide[data-slide="6"] .card-container,
+        .slide[data-slide="8"] .card-container {
+            gap: 1rem;
+        }
+
+        .slide[data-slide="6"] .card,
+        .slide[data-slide="8"] .card {
+            padding: 1.5rem;
+        }
+
+        .slide[data-slide="6"] h2,
+        .slide[data-slide="8"] h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        .slide[data-slide="6"] .image-container,
+        .slide[data-slide="8"] .image-container {
+            margin-bottom: 1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .slide.active .slide-content > * {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .slide.active .slide-content > *:nth-child(1) { animation-delay: 0.1s; }
+        .slide.active .slide-content > *:nth-child(2) { animation-delay: 0.2s; }
+        .slide.active .slide-content > *:nth-child(3) { animation-delay: 0.3s; }
+        .slide.active .slide-content > *:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Agenda Item Animations */
+        .agenda-item {
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        .slide.active .agenda-item {
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+
+        .slide.active .agenda-item:nth-child(1) { animation-delay: 0.2s; }
+        .slide.active .agenda-item:nth-child(2) { animation-delay: 0.35s; }
+        .slide.active .agenda-item:nth-child(3) { animation-delay: 0.5s; }
+        .slide.active .agenda-item:nth-child(4) { animation-delay: 0.65s; }
+        .slide.active .agenda-item:nth-child(5) { animation-delay: 0.8s; }
+
+        .agenda-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(249, 115, 22, 0.5);
+            box-shadow: 0 8px 32px rgba(249, 115, 22, 0.3);
+        }
+
+        .agenda-number {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-right: 2rem;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
+        }
+
+        .agenda-item:hover .agenda-number {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .agenda-text {
+            font-size: 2.2rem;
+            font-weight: 500;
+            color: white;
+            flex: 1;
+        }
+
+        .agenda-item.highlight {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(234, 88, 12, 0.15) 100%);
+            border-color: rgba(249, 115, 22, 0.4);
+        }
+
+        .agenda-item.highlight .agenda-text {
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .agenda-item.highlight .agenda-number {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            h1 { font-size: 3rem; }
+            h2 { font-size: 2.2rem; }
+            .subtitle { font-size: 1.5rem; }
+            .two-column { grid-template-columns: 1fr; }
+            .steps-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="slide-content">
+                <h1>Introducing the<br><span class="gradient-text">Realty Experts Agent Hub</span></h1>
+                <p class="subtitle">Your Central Hub for Market Intel, Collaboration & Growth</p>
+                <div class="image-container" style="max-width: 800px; margin: 0 auto;">
+                    <img src="https://harvinder.dscloud.me/blog/wp-content/uploads/2026/02/Modern-professional-real-estate-web-dashboard-homepage-clean-interface-with-navy-blue-and-orange-accent-colors.jpg" alt="Agent Hub Homepage" class="slide-image">
+                </div>
+                <p class="presenter-info">Tuesday Team Meeting | Presented by Harv Balu</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide" data-slide="2">
+            <div class="slide-content">
+                <h2 style="margin-bottom: 3rem;">Today's Agenda</h2>
+                <div style="max-width: 1200px; margin: 0 auto;">
+                    <div class="agenda-item">
+                        <div class="agenda-number">1</div>
+                        <div class="agenda-text">What is the Agent Hub?</div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-number">2</div>
+                        <div class="agenda-text">Key Features Walkthrough</div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-number">3</div>
+                        <div class="agenda-text">How It Benefits YOU</div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-number">4</div>
+                        <div class="agenda-text">Live Demo</div>
+                    </div>
+                    <div class="agenda-item highlight">
+                        <div class="agenda-number">5</div>
+                        <div class="agenda-text">Your Feedback & Ideas <span style="font-size: 1.8rem; color: rgba(255,255,255,0.8);">← We need to hear from you!</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: The Challenge -->
+        <div class="slide" data-slide="3">
+            <div class="slide-content">
+                <h2>Why We Built This</h2>
+                <div class="two-column">
+                    <div class="card">
+                        <h3 style="color: #ef4444;">BEFORE</h3>
+                        <ul>
+                            <li>Market data scattered across multiple sources</li>
+                            <li>No central place to share listings internally</li>
+                            <li>Training resources hard to find</li>
+                            <li>Limited team collaboration</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3 style="color: #10b981;">NOW</h3>
+                        <ul>
+                            <li>Everything in one place</li>
+                            <li>Built specifically for our team</li>
+                            <li>Accessible anywhere, anytime</li>
+                            <li>Modern, easy to use</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: What Is It? -->
+        <div class="slide" data-slide="4">
+            <div class="slide-content">
+                <h2>What Is the Agent Hub?</h2>
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border-radius: 24px; padding: 3rem; max-width: 1100px; margin: 2rem auto;">
+                    <p style="font-size: 2.2rem; color: white; line-height: 1.6; margin-bottom: 3rem;">
+                        A custom-built platform designed specifically for Realty Experts agents to stay informed, collaborate, and grow together.
+                    </p>
+                </div>
+                <div class="card-container">
+                    <div class="card" style="text-align: center;">
+                        <h3 style="font-size: 3rem;">📊</h3>
+                        <h3>Stay Informed</h3>
+                        <p>Daily market updates</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <h3 style="font-size: 3rem;">🤝</h3>
+                        <h3>Collaborate</h3>
+                        <p>Share with the team</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <h3 style="font-size: 3rem;">📚</h3>
+                        <h3>Grow</h3>
+                        <p>Access resources</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: At a Glance -->
+        <div class="slide" data-slide="5">
+            <div class="slide-content">
+                <h2>Daily Market Intelligence</h2>
+                <div class="two-column">
+                    <div class="image-container">
+                        <img src="https://harvinder.dscloud.me/blog/wp-content/uploads/2026/02/Professional-real-estate-market-data-dashboard-page-showing-interactive-bar-chart-with-inventory-statistics-for-multiple-Bay-Area-cities.jpg" alt="At a Glance - Inventory Chart" class="slide-image">
+                    </div>
+                    <div>
+                        <ul class="feature-list">
+                            <li>Fresh market updates every morning</li>
+                            <li>Inventory numbers across all Bay Area cities</li>
+                            <li>Interest rates, local news, economic trends</li>
+                            <li>Interactive charts you can explore</li>
+                        </ul>
+                        <div class="callout">
+                            <p>"No more hunting through emails or websites"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: At a Glance Detail -->
+        <div class="slide" data-slide="6">
+            <div class="slide-content">
+                <h2>What You'll See Daily</h2>
+                <div class="image-container" style="max-width: 1200px; margin: 0 auto 2rem;">
+                    <img src="https://harvinder.dscloud.me/blog/wp-content/uploads/2026/02/Modern-web-dashboard-showing-multiple-news-content-cards-stacked-vertically.jpg" alt="Daily News Content Cards" class="slide-image">
+                </div>
+                <div class="card-container" style="max-width: 1200px; margin: 0 auto;">
+                    <div class="card" style="text-align: center;">
+                        <p>✓ Real Estate market trends & inventory data</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <p>✓ Bay Area local news that impacts your business</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <p>✓ Stock market & economic indicators</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <p>✓ Color-coded stats for quick scanning</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Notes -->
+        <div class="slide" data-slide="7">
+            <div class="slide-content">
+                <h2>Share Insights with the Team</h2>
+                <div class="two-column">
+                    <div class="image-container">
+                        <img src="https://harvinder.dscloud.me/blog/wp-content/uploads/2026/02/Professional-real-estate-collaboration-platform-showing-grid-of-note-cards.jpg" alt="Notes Section - Grid of Cards" class="slide-image">
+                    </div>
+                    <div>
+                        <ul class="feature-list">
+                            <li>Post your new listings</li>
+                            <li>Share market insights & success stories</li>
+                            <li>Upload photos and documents</li>
+                            <li>Comment on each other's posts</li>
+                            <li>Create rich formatted content</li>
+                        </ul>
+                        <div class="callout" style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);">
+                            <p>"Our internal knowledge base"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Notes Detail -->
+        <div class="slide" data-slide="8">
+            <div class="slide-content">
+                <h2>Rich Content & Collaboration</h2>
+                <div class="image-container" style="max-width: 1200px; margin: 0 auto 2rem;">
+                    <img src="https://harvinder.dscloud.me/blog/wp-content/uploads/2026/02/Professional-rich-text-editor-interface-for-real-estate-platform.jpg" alt="Rich Text Editor Interface" class="slide-image">
+                </div>
+                <div class="card-container" style="max-width: 1200px; margin: 0 auto;">
+                    <div class="card" style="text-align: center;">
+                        <h3>Professional Editor</h3>
+                        <p>Rich text formatting</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <h3>Images & Media</h3>
+                        <p>Upload and showcase</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <h3>Team Comments</h3>
+                        <p>Discuss and collaborate</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <h3>Share Options</h3>
+                        <p>Public or internal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Resources -->
+        <div class="slide" data-slide="9">
+            <div class="slide-content">
+                <h2>Professional Development Hub</h2>
+                <div class="two-column">
+                    <div class="image-container">
+                        <img src="https://harvinder.dscloud.me/blog/wp-content/uploads/2026/02/Modern-web-interface-showing-grid-of-resource-category-cards.jpg" alt="Professional Development Resources" class="slide-image">
+                    </div>
+                    <div>
+                        <ul class="feature-list">
+                            <li>📚 Training & Education</li>
+                            <li>🎨 Marketing Resources</li>
+                            <li>💬 Scripts & Dialogues</li>
+                            <li>🔧 Tech Tools & Apps</li>
+                            <li>📋 REALTY EXPERTS® Forms</li>
+                            <li>➕ ...and growing based on YOUR input</li>
+                        </ul>
+                        <div class="callout">
+                            <p>"Everything you need to level up your business"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Benefits -->
+        <div class="slide" data-slide="10">
+            <div class="slide-content">
+                <h2>How This Helps YOUR Business</h2>
+                <div class="card-container">
+                    <div class="card">
+                        <h3 style="font-size: 3rem; text-align: center;">📈</h3>
+                        <h3>Save Time</h3>
+                        <p>All your daily market intel in one 5-minute visit</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="font-size: 3rem; text-align: center;">🎯</h3>
+                        <h3>Stay Competitive</h3>
+                        <p>Real-time market data keeps you informed and ahead</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="font-size: 3rem; text-align: center;">🤝</h3>
+                        <h3>Learn from Each Other</h3>
+                        <p>See what's working for your colleagues across the office</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="font-size: 3rem; text-align: center;">💼</h3>
+                        <h3>Grow Your Skills</h3>
+                        <p>Easy access to training materials and professional tools</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Mobile -->
+        <div class="slide" data-slide="11">
+            <div class="slide-content">
+                <h2>Access Anywhere, Anytime</h2>
+                <div class="image-container" style="max-width: 600px; margin: 2rem auto;">
+                    <img src="https://harvinder.dscloud.me/blog/wp-content/uploads/2026/02/Realty-Experts-Agent-Hub.jpg" alt="Realty Experts Agent Hub" class="slide-image">
+                </div>
+                <div class="card-container" style="max-width: 1000px; margin: 0 auto;">
+                    <div class="card" style="text-align: center;">
+                        <p>Fully responsive design</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <p>Works on phone, tablet, desktop</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <p>Check updates on the go</p>
+                    </div>
+                    <div class="card" style="text-align: center;">
+                        <p>Post listings from anywhere</p>
+                    </div>
+                </div>
+                <h3 style="margin-top: 2rem; font-size: 2.5rem;">Your office in your pocket</h3>
+            </div>
+        </div>
+
+        <!-- Slide 12: What's Next -->
+        <div class="slide" data-slide="12">
+            <div class="slide-content">
+                <h2>This Is Just the Beginning</h2>
+                <div class="two-column">
+                    <div class="card">
+                        <h3>Current Features</h3>
+                        <ul>
+                            <li>Daily market updates</li>
+                            <li>Team notes & collaboration</li>
+                            <li>Professional development resources</li>
+                            <li>Mobile accessible</li>
+                            <li>Rich content editing</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Coming Soon</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="color: #fbbf24;">🔮 Based on YOUR feedback</li>
+                            <li style="color: #fbbf24;">🔮 Your suggestions today</li>
+                            <li style="color: #fbbf24;">🔮 New integrations & tools</li>
+                            <li style="color: #fbbf24;">🔮 Enhanced features</li>
+                            <li style="color: #fbbf24;">🔮 More resources</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 3rem;">
+                    <h1 class="gradient-text" style="font-size: 3.5rem;">What do YOU want to see?</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Feedback -->
+        <div class="slide" data-slide="13">
+            <div class="slide-content">
+                <h2>Your Feedback Shapes This Platform</h2>
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border-radius: 24px; padding: 3rem; max-width: 1100px; margin: 2rem auto;">
+                    <h3 style="margin-bottom: 2rem; font-size: 2.2rem;">Questions to Consider:</h3>
+                    <ul class="feature-list" style="max-width: none;">
+                        <li>What features do you love?</li>
+                        <li>What would you change or improve?</li>
+                        <li>What's missing that you need?</li>
+                        <li>How can we make this MORE useful for your daily work?</li>
+                        <li>What resources should we prioritize adding?</li>
+                    </ul>
+                </div>
+                <div class="callout" style="max-width: 900px; margin: 2rem auto;">
+                    <p>"This only works if it works for YOU"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: How to Access -->
+        <div class="slide" data-slide="14">
+            <div class="slide-content">
+                <h2>Getting Started Is Easy</h2>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Visit the Website</h3>
+                        <p style="font-size: 1.8rem; font-weight: 700; color: #f97316;">teamrealtyexperts.com</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Enter Access Code</h3>
+                        <p>(shared separately for security)</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Enter Your Name</h3>
+                        <p>Personalize your experience</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Start Exploring!</h3>
+                        <p>Dive in and discover all the features</p>
+                    </div>
+                </div>
+                <div class="callout" style="max-width: 800px; margin: 3rem auto;">
+                    <p>📌 Pro Tip: Bookmark it. Make it your morning routine.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Live Demo -->
+        <div class="slide" data-slide="15">
+            <div class="slide-content">
+                <h2>Let Me Show You</h2>
+                <h1 style="font-size: 6rem; margin-top: 3rem;">LIVE WALKTHROUGH</h1>
+                <p class="subtitle" style="margin-top: 2rem;">Let's explore the platform together</p>
+                <div class="sp-embed-player" data-id="cOnOrDn09ux" data-aspect-ratio="1.777778" data-padding-top="56.250000%" style="position:relative;width:100%;max-width:1000px;margin:3rem auto;padding-top:56.250000%;height:0;"><script src="https://go.screenpal.com/consumption/player_appearance/cOnOrDn09ux/1.777778"></script><iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" scrolling="no" src="https://go.screenpal.com/player/cOnOrDn09ux?ff=1&ahc=1&dcc=1&tl=1&bg=transparent&share=1&download=1&embed=1&cl=1" allowfullscreen="true"></iframe></div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Discussion -->
+        <div class="slide" data-slide="16">
+            <div class="slide-content">
+                <h2>Open Discussion</h2>
+                <h1 class="gradient-text" style="font-size: 3.5rem; margin-bottom: 3rem;">Your Ideas & Feedback</h1>
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border-radius: 24px; padding: 3rem; max-width: 1100px; margin: 0 auto;">
+                    <h3 style="margin-bottom: 2rem; font-size: 2rem;">Let's Talk About:</h3>
+                    <ul class="feature-list" style="max-width: none;">
+                        <li>What stood out to you?</li>
+                        <li>What would make this invaluable for your daily work?</li>
+                        <li>What features are most exciting?</li>
+                        <li>Any concerns or questions?</li>
+                        <li>What resources should we add first?</li>
+                    </ul>
+                </div>
+                <p style="font-size: 2rem; margin-top: 3rem; color: white;">💡 All ideas welcome! No suggestion is too small.</p>
+            </div>
+        </div>
+
+        <!-- Slide 17: Investment -->
+        <div class="slide" data-slide="17">
+            <div class="slide-content">
+                <h2>We're All In</h2>
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border-radius: 24px; padding: 4rem; max-width: 1100px; margin: 3rem auto;">
+                    <p style="font-size: 2.5rem; color: white; line-height: 1.8; margin-bottom: 2rem;">
+                        We've invested significant time and resources building this platform.
+                    </p>
+                    <p style="font-size: 2.5rem; color: white; line-height: 1.8;">
+                        But it's only valuable if <span class="gradient-text" style="font-weight: 800;">YOU</span> find it valuable.
+                    </p>
+                </div>
+                <div class="callout" style="max-width: 900px; margin: 0 auto;">
+                    <p style="font-size: 2rem;">This is OUR platform.<br>Built by Realty Experts, for Realty Experts.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Thank You -->
+        <div class="slide" data-slide="18">
+            <div class="slide-content">
+                <h2>Thank You</h2>
+                <h1 style="margin: 3rem 0;">We built this for <span class="gradient-text">US</span>.</h1>
+                <h1 style="margin-bottom: 4rem;">Let's make it amazing <span class="gradient-text">together</span>.</h1>
+                <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border-radius: 24px; padding: 3rem; max-width: 800px; margin: 0 auto;">
+                    <p style="font-size: 2rem; color: white; margin-bottom: 2rem;">Questions? Ideas? Feedback?</p>
+                    <p style="font-size: 2rem; color: white;">Let's discuss.</p>
+                    <p style="font-size: 2.5rem; color: #f97316; font-weight: 700; margin-top: 3rem;">Harv Balu</p>
+                    <p style="font-size: 1.8rem; color: rgba(255, 255, 255, 0.8);">Realty Experts</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation -->
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">18</span>
+    </div>
+    <div class="nav-buttons">
+        <button class="nav-btn" id="prev-btn" disabled>← Previous</button>
+        <button class="nav-btn" id="next-btn">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+
+            if (n > totalSlides) { currentSlide = totalSlides; }
+            if (n < 1) { currentSlide = 1; }
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide - 1].classList.add('active');
+
+            document.getElementById('current-slide').textContent = currentSlide;
+            document.getElementById('total-slides').textContent = totalSlides;
+
+            // Update button states
+            document.getElementById('prev-btn').disabled = currentSlide === 1;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Button listeners
+        document.getElementById('next-btn').addEventListener('click', nextSlide);
+        document.getElementById('prev-btn').addEventListener('click', prevSlide);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
