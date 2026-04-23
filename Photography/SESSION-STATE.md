@@ -47,7 +47,15 @@
 
 **M4 COMPLETE.** Duplicate detection: 1,974 exact groups (SHA-1 match) + 3,985 similar clusters (pHash Hamming ≤ 4). Committed as `f412140`.
 
-**M5 COMPLETE (2026-04-23).** Auto-decided + applied 2,196 dup groups → **2,563 files moved to `/Volumes/Pictures-Vol3/#recycle/dup-cleanup-2026-04-23/`, 51.46 GB reclaimed, 0 errors**. All moves logged to `logs/deletions.jsonl` (append-only, full audit). Breakdown: 2,341 exact (SHA-1 match, keeper = non-backup + unsuffixed name + shortest path) + 222 similar (raw+JPG pairs only, keeper = raw). 2,165 similar clusters remain (bursts, sequential shots, unrelated pHash collisions) — left untouched for manual review via `duplicates.html`.
+**M5 COMPLETE (2026-04-23).** Auto-decided + applied dup groups over 2 passes:
+
+- Pass 1: 1,974 exact + 222 similar raw+JPG = **2,563 files, 51.46 GB**
+- Pass 2 (after cleanup re-surfaced previously-nested pairs): 58 raw+JPG = **58 files, 651.7 MB**
+- **TOTAL: 2,621 files moved, ~52.1 GB reclaimed, 0 errors**
+
+Everything in `/Volumes/Pictures-Vol3/#recycle/dup-cleanup-2026-04-23/` (reversible mv, not rm). Full audit in `logs/deletions.jsonl`.
+
+2,928 similar clusters still surfaced in `duplicates.html` (161.6 GB potential) — all are genuinely ambiguous: sequential pairs, video bursts, cross-year pHash collisions, or multi-member clusters worth reviewing visually. Not auto-touched.
 
 ## In-flight
 
