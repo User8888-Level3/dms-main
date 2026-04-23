@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.DS_Store
+index.db
+index.db-journal
+logs/*.log
+logs/*.jsonl
+site/years/
+site/photo/
+site/search-*.json
+site/duplicates.html
+# keep site/index.html, site/assets/, and hand-written templates

@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>{{ year }} — Photography Index</title>
+<link rel="stylesheet" href="../assets/style.css">
+<header><h1><a href="../index.html">← All Years</a> / {{ year }}</h1>
+        <span>{{ total }} photos</span></header>
+{% for event in events %}
+<h2 class="event-header">{{ event.name }} <span style="color:#666;font-weight:normal">· {{ event.count }}</span></h2>
+<div class="photo-grid">
+  {% for f in event.files %}
+  <a href="../photo/{{ f.sha1 }}.html">
+    <img src="file://{{ thumb_root }}/{{ f.thumb_rel }}" loading="lazy" alt="">
+    {% if f.kind == 'video' %}<span class="video-badge">▶ VIDEO</span>{% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% endfor %}
