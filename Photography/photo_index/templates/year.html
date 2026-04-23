@@ -8,8 +8,8 @@
 <h2 class="event-header">{{ event.name }} <span style="color:#666;font-weight:normal">· {{ event.count }}</span></h2>
 <div class="photo-grid">
   {% for f in event.files %}
-  <a href="../photo/{{ f.sha1 }}.html">
-    <img src="file://{{ thumb_root }}/{{ f.thumb_rel }}" loading="lazy" alt="">
+  <a href="{{ thumb_root }}/{{ f.thumb_rel }}" target="_blank">
+    <img src="{{ thumb_root }}/{{ f.thumb_rel }}" loading="lazy" alt="">
     {% if f.kind == 'video' %}<span class="video-badge">▶ VIDEO</span>{% endif %}
   </a>
   {% endfor %}

@@ -1,13 +1,34 @@
 # Photography Index — Session State
 
-**Last updated:** 2026-04-22 (M1 + M2 COMPLETE — ready for M3)
-**Phase:** Ready for M3 (all years 2013–2025 + search UI).
+**Last updated:** 2026-04-22 (M1 + M2 + M3 COMPLETE — ready for M4 dup detection)
+**Phase:** Ready for M4 (exact + similar duplicate detection, `duplicates.html`).
 
 ## Where we are
 
 **M1 COMPLETE.** 40 CR2 raws from 2023/20230101-SanJose-XO indexed with site generated.
 
-**M2 COMPLETE.** 2024 indexed end-to-end: **1790 files, 0 errors, 16m56s (1.8/s)**. 26 event folders, 1619 CR3 raws, 70 videos, 101 images, 1621 unique thumbs on Synology (28 MB). 169 exact byte-dupes surfaced naturally via SHA-1 collisions. Committed as `058c140`.
+**M2 COMPLETE.** 2024 indexed end-to-end: **1790 files, 0 errors, 16m56s (1.8/s)**. Committed as `058c140`.
+
+**M3 COMPLETE.** Full 13-year archive indexed: **26,438 files across 2013–2025, 6 errors** (all file corruption on Synology, not our bug — 3 CR2 with XMP errors, 2 CR2 all-zero, 1 MOV missing moov atom). Breakdown: 6,871 images + 14,194 raws + 5,373 videos. Top cameras: Canon EOS REBEL T5i (13,958), Canon EOS RP (3,551), PowerShot SX230 HS (1,446), Rebel XT (1,242), DJI drone (130), iPhones (~150). Search UI + JSON exports live.
+
+### Per-year timing
+
+| Year | Files | Time | Rate |
+|---|---|---|---|
+| 2013 | 874 | 2m56s | 4.9/s |
+| 2014 | 1,258 | 6m02s | 3.5/s |
+| 2015 | 835 | 12m33s | 1.1/s |
+| 2016 | 4,367 | 28m11s | 2.6/s |
+| 2017 | 2,149 | 11m54s | 3.0/s |
+| 2018 | 278 | 1m11s | 3.9/s |
+| 2019 | 835 | 4m22s | 3.2/s |
+| 2020 | 1,830 | 47m51s | 0.6/s |
+| 2021 | 2,695 | 18m48s | 2.4/s |
+| 2022 | 5,493 | 30m27s | 3.0/s |
+| 2023 | 3,481 | 27m28s | 2.1/s |
+| 2024 | 1,790 | 16m56s | 1.8/s |
+| 2025 | 553 | 4m33s | 2.0/s |
+| **Total** | **26,438** | **~3h13m** | **2.3/s avg** |
 
 **Added in M2:**
 - `make_thumbnail_raw()` — CR3/ARW/NEF/ORF/RW2 via exiftool preview extraction (tries PreviewImage → JpgFromRaw → ThumbnailImage).
@@ -62,13 +83,18 @@ None — design is fully approved.
 
 ## Next action
 
-**Harv:** open `site/years/2024.html` and scroll. Expected: 1780 thumbnails grouped under 26 event folders, mix of photos and videos. If it looks good, say *"continue to M3"* to kick off the full 2013–2025 indexing run (background, expect 2–4 h) + search UI build.
+**Local HTTP server** is running on `http://127.0.0.1:8765/` (background task `bpsn8l2jh`). Kill via `pkill -f "http.server 8765"` when done.
 
-**Claude (next session):** on "continue photography index" — read this file. If Harv approved, start M3 Task 18 (background run across 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2025; 2023 and 2024 already indexed). Then Task 19 (search JSON export) and Task 20 (search UI).
+**Harv:** browse the site at http://127.0.0.1:8765/ — 13 year tiles with covers, each year page works, and the search bar accepts queries like `year:2016 kind:video`, `camera:canon`, `has:gps`, `sha1:abc`, or free text. If it looks solid, say *"continue to M4"* to start duplicate detection.
+
+**Claude (next session):** on "continue photography index" — read this file. Start M4 Task 21 (exact-match dup query via SHA-1 GROUP BY), then Task 22 (pHash similar-match with BK-tree or prefix-bucketing), then Task 23 (`duplicates.html` with keeper heuristic + localStorage decisions).
+
+**Known data oddities to consider for M4:**
+- 169 exact-dup SHA-1 collisions already found within 2024 alone. Full-archive dup count will be interesting.
+- 6 error rows (year=2016) are garbage files on the Synology — flag them to Harv for possible recycle-bin move at some point.
 
 ## Remaining milestones
 
-- **M3** (Tasks 18–20): Index all 2013–2025, search JSON + search UI.
 - **M4** (Tasks 21–24): Exact dup detection + pHash similarity, duplicates.html with keeper heuristic.
 - **M5** (Tasks 25–27): Deletion workflow (`#recycle` moves, audit log, decisions.json).
 

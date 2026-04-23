@@ -52,3 +52,45 @@ def test_generate_index_and_year(tmp_path: Path, monkeypatch):
     assert "20240215-other" in yr_html
     # 3 thumbnail <img> tags present
     assert yr_html.count("<img") >= 3
+
+
+def test_generate_search_json(tmp_path: Path, monkeypatch):
+    import json
+    site_dir = tmp_path / "site"
+    thumb_root = tmp_path / "thumbs"
+    monkeypatch.setattr(config, "SITE_DIR", site_dir)
+    monkeypatch.setattr(config, "THUMB_ROOT", thumb_root)
+    monkeypatch.setattr(config, "LOG_DIR", tmp_path / "logs")
+
+    db = open_db(tmp_path / "idx.db")
+    # 2 files in 2023, 1 in 2024
+    for year, event, name in [
+        (2023, "20230501-test", "a.jpg"),
+        (2023, "20230501-test", "b.jpg"),
+        (2024, "20240101-other", "c.jpg"),
+    ]:
+        p = tmp_path / str(year) / event / name
+        p.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGB", (400, 300), "red").save(p, "JPEG")
+        rec = FileRecord(path=p, year=year, event_folder=event,
+                         filename=name, ext="jpg", kind="image",
+                         size=p.stat().st_size, mtime=p.stat().st_mtime)
+        process_file(rec, db, thumb_root)
+
+    manifest = html_out.generate_search_json(db)
+    assert {m["year"] for m in manifest} == {2023, 2024}
+    assert {m["count"] for m in manifest} == {1, 2}
+
+    # per-year JSON
+    s2023 = json.loads((site_dir / "assets" / "search-2023.json").read_text())
+    s2024 = json.loads((site_dir / "assets" / "search-2024.json").read_text())
+    assert len(s2023) == 2 and len(s2024) == 1
+    first = s2023[0]
+    assert {"id", "sha1", "f", "e", "d", "c", "g", "k", "t"} <= set(first.keys())
+    assert first["k"] == "image"
+    assert first["g"] is False
+
+    # manifest
+    mf = json.loads((site_dir / "assets" / "search-manifest.json").read_text())
+    assert mf["thumb_root"] == "thumbs"
+    assert len(mf["years"]) == 2

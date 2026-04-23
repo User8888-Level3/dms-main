@@ -8,10 +8,13 @@ dist/
 .DS_Store
 index.db
 index.db-journal
+index.db-wal
+index.db-shm
 logs/*.log
 logs/*.jsonl
 site/years/
 site/photo/
-site/search-*.json
+site/assets/search-*.json
+site/assets/search-manifest.json
 site/duplicates.html
-# keep site/index.html, site/assets/, and hand-written templates
+# keep site/index.html, site/assets/style.css, site/assets/search.js, and hand-written templates

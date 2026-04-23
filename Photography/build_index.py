@@ -7,7 +7,7 @@ from pathlib import Path
 
 from photo_index import config, db as dbmod
 from photo_index.walker import walk_year_folder
-from photo_index.html_out import generate_index, generate_year
+from photo_index.html_out import generate_index, generate_year, generate_search_json
 from photo_index.progress import ProgressLogger
 from photo_index.runner import run_indexer
 
@@ -63,7 +63,10 @@ def cmd_html(args) -> None:
     ]
     for y in years:
         generate_year(db, y)
-    print(f"[html] wrote index + {len(years)} year pages to {config.SITE_DIR}")
+    manifest = generate_search_json(db)
+    total_indexed = sum(m["count"] for m in manifest)
+    print(f"[html] wrote index + {len(years)} year pages + search JSON "
+          f"({total_indexed} rows across {len(manifest)} years) to {config.SITE_DIR}")
 
 
 def main() -> None:

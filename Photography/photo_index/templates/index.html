@@ -2,13 +2,25 @@
 <meta charset="utf-8">
 <title>Photography Index</title>
 <link rel="stylesheet" href="assets/style.css">
-<header><h1>Photography Index</h1><span>{{ total_files }} photos</span></header>
-<section class="year-grid">
-  {% for y in years %}
-  <a class="year-tile" href="years/{{ y.year }}.html">
-    {% if y.cover_thumb %}<img src="{{ y.cover_thumb }}" loading="lazy">{% endif %}
-    <div class="count">{{ y.count }}</div>
-    <div class="label">{{ y.year }}</div>
-  </a>
-  {% endfor %}
+<header>
+  <h1>Photography Index</h1>
+  <span id="total-count">{{ total_files }} photos</span>
+  <input id="search" type="search" placeholder="Search: filename, event, year:2024, kind:video, has:gps, camera:canon, sha1:abc" autocomplete="off">
+  <span id="search-status"></span>
+</header>
+<section id="browse">
+  <section class="year-grid">
+    {% for y in years %}
+    <a class="year-tile" href="years/{{ y.year }}.html">
+      {% if y.cover_thumb %}<img src="{{ y.cover_thumb }}" loading="lazy">{% endif %}
+      <div class="count">{{ y.count }}</div>
+      <div class="label">{{ y.year }}</div>
+    </a>
+    {% endfor %}
+  </section>
 </section>
+<section id="results" hidden>
+  <h2 class="event-header" id="results-header"></h2>
+  <div class="photo-grid" id="results-grid"></div>
+</section>
+<script src="assets/search.js" defer></script>
