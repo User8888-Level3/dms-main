@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Photography index CLI. Intended to be invoked by Claude, not Harv directly."""
 import argparse
+import json
 import signal
 import threading
 from pathlib import Path
@@ -15,6 +16,8 @@ from photo_index.html_out import (
 )
 from photo_index.progress import ProgressLogger
 from photo_index.runner import run_indexer
+from photo_index.decide import auto_decide_all
+from photo_index.apply_decisions import apply_decisions
 
 
 def cmd_index(args) -> None:
@@ -80,6 +83,50 @@ def cmd_html(args) -> None:
               f"({stats['similar_savings']} potential)")
 
 
+def _human_bytes(n: int) -> str:
+    x = float(n)
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if x < 1024.0:
+            return f"{x:.1f} {unit}"
+        x /= 1024.0
+    return f"{x:.1f} PB"
+
+
+def cmd_decide(args) -> None:
+    db = dbmod.open_db(config.DB_PATH)
+    payload = auto_decide_all(
+        db,
+        similar_threshold=args.similar_threshold,
+        similar_max_cluster_size=args.similar_max_cluster_size,
+    )
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(payload, indent=2))
+    s = payload["summary"]
+    print(f"[decide] wrote {out}")
+    print(f"[decide] applied:  {s['applied_exact']} exact  +  "
+          f"{s['applied_similar']} similar")
+    print(f"[decide] skipped:  {s['skipped_similar_large']} similar "
+          f"(cluster too big or cross-year)")
+    print(f"[decide] to delete: {s['files_to_delete']} files, "
+          f"reclaim {_human_bytes(s['bytes_to_reclaim'])}")
+
+
+def cmd_apply(args) -> None:
+    payload = json.loads(Path(args.decisions).read_text())
+    result = apply_decisions(
+        payload,
+        db_path=config.DB_PATH,
+        dry_run=not args.apply,
+        run_date=args.run_date,
+    )
+    mode = "DRY-RUN" if result.dry_run else "APPLIED"
+    print(f"[{mode}] moved={result.moved}  skipped={result.skipped}  "
+          f"errors={result.errors}  bytes={_human_bytes(result.bytes_reclaimed)}")
+    if result.recycle_root:
+        print(f"[{mode}] recycle dir: {result.recycle_root}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(prog="build_index")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -107,6 +154,20 @@ def main() -> None:
         help="Skip duplicates.html generation (fast path — useful during active indexing)",
     )
     p_html.set_defaults(fn=cmd_html)
+
+    p_dec = sub.add_parser("decide", help="Auto-generate decisions.json for dup groups")
+    p_dec.add_argument("--out", default="decisions.json", help="Output path")
+    p_dec.add_argument("--similar-threshold", type=int, default=4)
+    p_dec.add_argument("--similar-max-cluster-size", type=int, default=2)
+    p_dec.set_defaults(fn=cmd_decide)
+
+    p_app = sub.add_parser("apply", help="Apply decisions.json (default dry-run)")
+    p_app.add_argument("decisions", help="Path to decisions.json")
+    p_app.add_argument("--apply", action="store_true",
+                       help="Actually move files (default is dry-run)")
+    p_app.add_argument("--run-date", default=None,
+                       help="Override dup-cleanup date suffix (YYYY-MM-DD)")
+    p_app.set_defaults(fn=cmd_apply)
 
     args = ap.parse_args()
     args.fn(args)
