@@ -1,7 +1,7 @@
 # Photography Index — Session State
 
-**Last updated:** 2026-04-22 (M1 + M2 + M3 COMPLETE — ready for M4 dup detection)
-**Phase:** Ready for M4 (exact + similar duplicate detection, `duplicates.html`).
+**Last updated:** 2026-04-23 (M1 through M5 COMPLETE — archive deduplicated)
+**Phase:** Project at feature-complete v1. Ongoing operations only.
 
 ## Where we are
 
@@ -45,9 +45,13 @@
 
 **Smoke-tested** the threaded pipeline on 10 mixed CR3/MP4 files from 2024: 10/10 ok in 27s (~0.4/s — 4 workers).
 
+**M4 COMPLETE.** Duplicate detection: 1,974 exact groups (SHA-1 match) + 3,985 similar clusters (pHash Hamming ≤ 4). Committed as `f412140`.
+
+**M5 COMPLETE (2026-04-23).** Auto-decided + applied 2,196 dup groups → **2,563 files moved to `/Volumes/Pictures-Vol3/#recycle/dup-cleanup-2026-04-23/`, 51.46 GB reclaimed, 0 errors**. All moves logged to `logs/deletions.jsonl` (append-only, full audit). Breakdown: 2,341 exact (SHA-1 match, keeper = non-backup + unsuffixed name + shortest path) + 222 similar (raw+JPG pairs only, keeper = raw). 2,165 similar clusters remain (bursts, sequential shots, unrelated pHash collisions) — left untouched for manual review via `duplicates.html`.
+
 ## In-flight
 
-Nothing running. M2 committed, tests green, site regenerated.
+Nothing running.
 
 ## How to rerun / extend
 
@@ -83,20 +87,21 @@ None — design is fully approved.
 
 ## Next action
 
-**Local HTTP server** is running on `http://127.0.0.1:8765/` (background task `bpsn8l2jh`). Kill via `pkill -f "http.server 8765"` when done.
+**Harv:** archive is cleaned. 23,869 active files (down from 26,438). Browse http://127.0.0.1:8765/ to verify the site still looks good, then eventually:
+- Purge `#recycle/dup-cleanup-2026-04-23/` (51.5 GB) once you're confident the dedup was correct. It's a normal Synology directory — just `rm -rf` it or delete via Finder.
+- Optionally review the 2,165 skipped similar clusters via duplicates.html for a second manual pass.
 
-**Harv:** browse the site at http://127.0.0.1:8765/ — 13 year tiles with covers, each year page works, and the search bar accepts queries like `year:2016 kind:video`, `camera:canon`, `has:gps`, `sha1:abc`, or free text. If it looks solid, say *"continue to M4"* to start duplicate detection.
+**Claude (future session):** on "continue photography index":
+- Re-indexing new photos: `./.venv/bin/python build_index.py index /Volumes/Pictures-Vol3/2026 --workers 12`. mtime-skip means re-running on existing years is cheap.
+- Re-running dup detection after new imports: `build_index.py decide --out decisions.json` → inspect → `apply decisions.json --apply`.
+- Phase 2 scope expansion (topical folders, iPhone library, old Mac backup) — point indexer at those paths. Schema supports it as-is.
 
-**Claude (next session):** on "continue photography index" — read this file. Start M4 Task 21 (exact-match dup query via SHA-1 GROUP BY), then Task 22 (pHash similar-match with BK-tree or prefix-bucketing), then Task 23 (`duplicates.html` with keeper heuristic + localStorage decisions).
-
-**Known data oddities to consider for M4:**
-- 169 exact-dup SHA-1 collisions already found within 2024 alone. Full-archive dup count will be interesting.
-- 6 error rows (year=2016) are garbage files on the Synology — flag them to Harv for possible recycle-bin move at some point.
+**Known data oddities:**
+- 6 error rows (year=2016) are garbage files on the Synology — flag for possible cleanup later.
 
 ## Remaining milestones
 
-- **M4** (Tasks 21–24): Exact dup detection + pHash similarity, duplicates.html with keeper heuristic.
-- **M5** (Tasks 25–27): Deletion workflow (`#recycle` moves, audit log, decisions.json).
+None — all 5 milestones complete. Ongoing ops only (new imports, periodic dedup).
 
 ## Pointers
 
