@@ -1,13 +1,15 @@
 # Photography Index — Session State
 
-**Last updated:** 2026-04-22 (M2 Tasks 11–16 DONE, Task 17 in flight)
-**Phase:** M2 — full-year 2024 indexing running in background.
+**Last updated:** 2026-04-22 (M1 + M2 COMPLETE — ready for M3)
+**Phase:** Ready for M3 (all years 2013–2025 + search UI).
 
 ## Where we are
 
 **M1 COMPLETE.** 40 CR2 raws from 2023/20230101-SanJose-XO indexed with site generated.
 
-**M2 Tasks 11–16 COMPLETE.** Added:
+**M2 COMPLETE.** 2024 indexed end-to-end: **1790 files, 0 errors, 16m56s (1.8/s)**. 26 event folders, 1619 CR3 raws, 70 videos, 101 images, 1621 unique thumbs on Synology (28 MB). 169 exact byte-dupes surfaced naturally via SHA-1 collisions. Committed as `058c140`.
+
+**Added in M2:**
 - `make_thumbnail_raw()` — CR3/ARW/NEF/ORF/RW2 via exiftool preview extraction (tries PreviewImage → JpgFromRaw → ThumbnailImage).
 - `make_thumbnail_video()` — ffmpeg frame at t=1s with t=0 fallback.
 - `extract_exif_exiftool()` — JSON-mode exiftool for CR3/MP4/MOV (piexif can't read ISO-BMFF).
@@ -24,9 +26,7 @@
 
 ## In-flight
 
-**Task 17 running:** full 2024 indexing (1,790 files) via `build_index.py index /Volumes/Pictures-Vol3/2024 --workers 12`. Output streaming to `logs/2024-run.log` and `logs/indexer.log`. Main process started ~2026-04-22 17:10 PT.
-
-If this session dies mid-run: the DB is WAL-mode with batched commits, so up to the last batch is safe. Restart by re-running the same command — mtime-skip will resume from wherever it got to.
+Nothing running. M2 committed, tests green, site regenerated.
 
 ## How to rerun / extend
 
@@ -62,14 +62,9 @@ None — design is fully approved.
 
 ## Next action
 
-**When Task 17 finishes:**
-1. Check row counts: `SELECT COUNT(*), COUNT(error), COUNT(DISTINCT event_folder) FROM files WHERE year=2024;`
-2. Regenerate HTML: `build_index.py html`.
-3. Harv opens `site/years/2024.html` and scrolls — confirm loads, thumbs render, no obvious misses.
-4. Commit M2.
-5. Move to M3 (all years 2013–2025 + search UI).
+**Harv:** open `site/years/2024.html` and scroll. Expected: 1780 thumbnails grouped under 26 event folders, mix of photos and videos. If it looks good, say *"continue to M3"* to kick off the full 2013–2025 indexing run (background, expect 2–4 h) + search UI build.
 
-**If starting a new session:** say *"continue photography index"* — Claude reads this file and picks up from "Next action."
+**Claude (next session):** on "continue photography index" — read this file. If Harv approved, start M3 Task 18 (background run across 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2025; 2023 and 2024 already indexed). Then Task 19 (search JSON export) and Task 20 (search UI).
 
 ## Remaining milestones
 
