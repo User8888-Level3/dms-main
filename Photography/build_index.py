@@ -7,7 +7,12 @@ from pathlib import Path
 
 from photo_index import config, db as dbmod
 from photo_index.walker import walk_year_folder
-from photo_index.html_out import generate_index, generate_year, generate_search_json
+from photo_index.html_out import (
+    generate_index,
+    generate_year,
+    generate_search_json,
+    generate_duplicates_html,
+)
 from photo_index.progress import ProgressLogger
 from photo_index.runner import run_indexer
 
@@ -67,6 +72,12 @@ def cmd_html(args) -> None:
     total_indexed = sum(m["count"] for m in manifest)
     print(f"[html] wrote index + {len(years)} year pages + search JSON "
           f"({total_indexed} rows across {len(manifest)} years) to {config.SITE_DIR}")
+    if not args.no_dups:
+        stats = generate_duplicates_html(db)
+        print(f"[html] duplicates.html: {stats['exact_groups']} exact groups "
+              f"({stats['exact_savings']} redundant), "
+              f"{stats['similar_groups']} similar groups "
+              f"({stats['similar_savings']} potential)")
 
 
 def main() -> None:
@@ -90,6 +101,11 @@ def main() -> None:
     p_idx.set_defaults(fn=cmd_index)
 
     p_html = sub.add_parser("html", help="Regenerate site/index.html and site/years/*.html")
+    p_html.add_argument(
+        "--no-dups",
+        action="store_true",
+        help="Skip duplicates.html generation (fast path — useful during active indexing)",
+    )
     p_html.set_defaults(fn=cmd_html)
 
     args = ap.parse_args()

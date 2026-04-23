@@ -4,6 +4,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import sqlite3
 
 from . import config
+from .dups import find_exact_dups, find_similar_groups
 
 _env = Environment(
     loader=FileSystemLoader(Path(__file__).parent / "templates"),
@@ -96,3 +97,132 @@ def generate_search_json(db: sqlite3.Connection) -> list[dict]:
         "years": manifest,
     }, separators=(",", ":")))
     return manifest
+
+
+def _human_bytes(n: int) -> str:
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if n < 1024.0:
+            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1024.0
+    return f"{n:.1f} PB"
+
+
+def _fetch_files_by_ids(db: sqlite3.Connection, ids: list[int]) -> list[dict]:
+    # sqlite3 placeholder rewrite for IN (...) — cap batch at 500 for safety
+    placeholders = ",".join("?" * len(ids))
+    rows = db.execute(
+        f"""
+        SELECT id, path, filename, year, event_folder, bytes, mtime,
+               exif_taken_at, thumb_rel, kind, sha1
+        FROM files WHERE id IN ({placeholders})
+        """,
+        ids,
+    ).fetchall()
+    return [
+        {
+            "id": r[0], "path": r[1], "filename": r[2], "year": r[3],
+            "event": r[4], "bytes": r[5] or 0, "mtime": r[6] or 0.0,
+            "taken_at": r[7], "thumb_rel": r[8], "kind": r[9], "sha1": r[10],
+        }
+        for r in rows
+    ]
+
+
+def _pick_keeper(files: list[dict], strategy: str = "oldest") -> int:
+    """Return file id of recommended keeper.
+
+    oldest  — smallest mtime (first import typically)
+    largest — largest file bytes (typically highest quality)
+    """
+    if strategy == "largest":
+        key = lambda f: (-f["bytes"], f["mtime"], f["id"])
+    else:  # "oldest"
+        key = lambda f: (f["mtime"], -f["bytes"], f["id"])
+    return sorted(files, key=key)[0]["id"]
+
+
+def generate_duplicates_html(
+    db: sqlite3.Connection,
+    similar_threshold: int = 4,
+    max_exact: int = 500,
+    max_similar: int = 500,
+) -> dict:
+    """Render site/duplicates.html.
+
+    Returns stats dict for logging.
+    """
+    config.ensure_dirs()
+
+    exact = find_exact_dups(db)
+    similar_raw = find_similar_groups(db, threshold=similar_threshold)
+
+    # Sort by total bytes savings (descending) so biggest wins come first.
+    def _hydrate_exact(g: dict) -> dict:
+        files = _fetch_files_by_ids(db, g["ids"])
+        savings_bytes = sum(f["bytes"] for f in files) - max(f["bytes"] for f in files)
+        keeper_id = _pick_keeper(files, "oldest")
+        for f in files:
+            f["is_keeper"] = (f["id"] == keeper_id)
+            f["bytes_human"] = _human_bytes(f["bytes"])
+        return {
+            "kind": "exact",
+            "gid": f"e{g['ids'][0]}",
+            "sha1": g["sha1"],
+            "files": files,
+            "count": g["count"],
+            "savings_bytes": savings_bytes,
+            "savings_human": _human_bytes(savings_bytes),
+        }
+
+    def _hydrate_similar(g: dict) -> dict:
+        files = _fetch_files_by_ids(db, g["ids"])
+        # For similar groups we conservatively estimate savings = sum of all but largest
+        savings_bytes = sum(f["bytes"] for f in files) - max(f["bytes"] for f in files)
+        keeper_id = _pick_keeper(files, "largest")
+        for f in files:
+            f["is_keeper"] = (f["id"] == keeper_id)
+            f["bytes_human"] = _human_bytes(f["bytes"])
+        return {
+            "kind": "similar",
+            "gid": f"s{g['ids'][0]}",
+            "sha1": None,
+            "files": files,
+            "count": g["count"],
+            "savings_bytes": savings_bytes,
+            "savings_human": _human_bytes(savings_bytes),
+        }
+
+    exact_groups = sorted(
+        (_hydrate_exact(g) for g in exact),
+        key=lambda g: -g["savings_bytes"],
+    )
+    similar_groups = sorted(
+        (_hydrate_similar(g) for g in similar_raw),
+        key=lambda g: -g["savings_bytes"],
+    )
+
+    total_exact_savings = sum(g["savings_bytes"] for g in exact_groups)
+    total_similar_savings = sum(g["savings_bytes"] for g in similar_groups)
+
+    stats = {
+        "exact_groups": len(exact_groups),
+        "exact_files": sum(g["count"] for g in exact_groups),
+        "exact_savings": _human_bytes(total_exact_savings),
+        "similar_groups": len(similar_groups),
+        "similar_files": sum(g["count"] for g in similar_groups),
+        "similar_savings": _human_bytes(total_similar_savings),
+        "similar_threshold": similar_threshold,
+    }
+
+    exact_shown = exact_groups[:max_exact]
+    similar_shown = similar_groups[:max_similar]
+
+    html = _env.get_template("duplicates.html").render(
+        stats=stats,
+        exact_groups=exact_shown,
+        similar_groups=similar_shown,
+        exact_hidden=max(0, len(exact_groups) - max_exact),
+        similar_hidden=max(0, len(similar_groups) - max_similar),
+    )
+    (config.SITE_DIR / "duplicates.html").write_text(html)
+    return stats

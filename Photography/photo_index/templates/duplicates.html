@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Duplicates — Photography Index</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/dups.css">
+<header>
+  <h1><a href="index.html">← All Years</a> / Duplicates</h1>
+  <span id="decisions-summary">0 decisions</span>
+  <button id="export-btn">Export decisions.json</button>
+  <button id="clear-btn">Clear all</button>
+</header>
+
+<section class="stats-bar">
+  <div class="stat"><b>{{ stats.exact_groups }}</b> exact dup groups · {{ stats.exact_files }} files · <b>{{ stats.exact_savings }}</b> redundant</div>
+  <div class="stat"><b>{{ stats.similar_groups }}</b> similar groups (Hamming ≤ {{ stats.similar_threshold }}) · {{ stats.similar_files }} files · ~<b>{{ stats.similar_savings }}</b> potential</div>
+</section>
+
+<h2 class="section-header">Exact duplicates — byte-for-byte identical (SHA-1 match)</h2>
+{% if exact_hidden %}
+<div class="hidden-note">Showing top {{ exact_groups|length }} of {{ exact_groups|length + exact_hidden }} exact groups by space savings.</div>
+{% endif %}
+{% for g in exact_groups %}
+<div class="dup-group" data-gid="{{ g.gid }}" data-kind="exact">
+  <div class="group-header">
+    <span class="badge exact">EXACT</span>
+    <span class="group-title">{{ g.count }} copies — save {{ g.savings_human }}</span>
+    <span class="sha1" title="SHA-1">{{ g.sha1[:12] }}…</span>
+    <button class="decision-btn apply">Apply keeper</button>
+    <button class="decision-btn skip">Skip</button>
+    <span class="decision-state"></span>
+  </div>
+  <div class="group-files">
+    {% for f in g.files %}
+    <label class="file-tile{% if f.is_keeper %} keeper{% endif %}" data-id="{{ f.id }}">
+      <input type="radio" name="keep-{{ g.gid }}" value="{{ f.id }}"{% if f.is_keeper %} checked{% endif %}>
+      <img src="thumbs/{{ f.thumb_rel }}" loading="lazy" alt="">
+      <div class="file-meta">
+        <div class="filename">{{ f.filename }}</div>
+        <div class="muted">{{ f.year }} · {{ f.event }}</div>
+        <div class="muted">{{ f.bytes_human }}{% if f.taken_at %} · {{ f.taken_at }}{% endif %}</div>
+      </div>
+    </label>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
+<h2 class="section-header">Similar (perceptual pHash match)</h2>
+<div class="caveat">Similar groups use pHash Hamming distance ≤ {{ stats.similar_threshold }}. Review visually before applying — these may be intentional variants (different exposures, bracketed shots, re-edits).</div>
+{% if similar_hidden %}
+<div class="hidden-note">Showing top {{ similar_groups|length }} of {{ similar_groups|length + similar_hidden }} similar groups by potential savings.</div>
+{% endif %}
+{% for g in similar_groups %}
+<div class="dup-group" data-gid="{{ g.gid }}" data-kind="similar">
+  <div class="group-header">
+    <span class="badge similar">SIMILAR</span>
+    <span class="group-title">{{ g.count }} files — save ~{{ g.savings_human }}</span>
+    <button class="decision-btn apply">Apply keeper</button>
+    <button class="decision-btn skip">Skip</button>
+    <span class="decision-state"></span>
+  </div>
+  <div class="group-files">
+    {% for f in g.files %}
+    <label class="file-tile{% if f.is_keeper %} keeper{% endif %}" data-id="{{ f.id }}">
+      <input type="radio" name="keep-{{ g.gid }}" value="{{ f.id }}"{% if f.is_keeper %} checked{% endif %}>
+      <img src="thumbs/{{ f.thumb_rel }}" loading="lazy" alt="">
+      <div class="file-meta">
+        <div class="filename">{{ f.filename }}</div>
+        <div class="muted">{{ f.year }} · {{ f.event }}</div>
+        <div class="muted">{{ f.bytes_human }}{% if f.taken_at %} · {{ f.taken_at }}{% endif %}</div>
+      </div>
+    </label>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
+<script src="assets/dups.js" defer></script>

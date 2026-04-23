@@ -94,3 +94,37 @@ def test_generate_search_json(tmp_path: Path, monkeypatch):
     mf = json.loads((site_dir / "assets" / "search-manifest.json").read_text())
     assert mf["thumb_root"] == "thumbs"
     assert len(mf["years"]) == 2
+
+
+def test_generate_duplicates_html(tmp_path: Path, monkeypatch):
+    import shutil
+    site_dir = tmp_path / "site"
+    thumb_root = tmp_path / "thumbs"
+    monkeypatch.setattr(config, "SITE_DIR", site_dir)
+    monkeypatch.setattr(config, "THUMB_ROOT", thumb_root)
+    monkeypatch.setattr(config, "LOG_DIR", tmp_path / "logs")
+
+    db = open_db(tmp_path / "idx.db")
+    # Two byte-identical files → exact dup group
+    original = tmp_path / "2024" / "a" / "original.jpg"
+    original.parent.mkdir(parents=True, exist_ok=True)
+    Image.new("RGB", (600, 400), "cyan").save(original, "JPEG")
+    copy = tmp_path / "2024" / "b" / "copy.jpg"
+    copy.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(original, copy)
+    for src, event, name in [(original, "a", "original.jpg"), (copy, "b", "copy.jpg")]:
+        rec = FileRecord(path=src, year=2024, event_folder=event,
+                         filename=name, ext="jpg", kind="image",
+                         size=src.stat().st_size, mtime=src.stat().st_mtime)
+        process_file(rec, db, thumb_root)
+
+    stats = html_out.generate_duplicates_html(db)
+    assert stats["exact_groups"] == 1
+    assert stats["exact_files"] == 2
+    out = site_dir / "duplicates.html"
+    assert out.exists()
+    html = out.read_text()
+    assert "EXACT" in html
+    assert "original.jpg" in html and "copy.jpg" in html
+    # Keeper should be marked
+    assert "keeper" in html
