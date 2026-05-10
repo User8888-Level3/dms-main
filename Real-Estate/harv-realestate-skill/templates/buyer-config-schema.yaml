@@ -1,0 +1,12 @@
+# Schema reference for CLIENT.md frontmatter (place between --- markers at top of CLIENT.md)
+client_name: "Full Legal Name (Preferred Name)"  # required
+client_role: buyer                                # required: buyer | seller
+target_close_date: "YYYY-MM-DD"                   # optional
+max_price: 0                                      # optional, integer USD
+min_price: 0                                      # optional, integer USD
+preferred_areas: []                               # optional, list of city names
+must_haves: []                                    # optional, list of strings
+nice_to_haves: []                                 # optional
+deal_breakers: []                                 # optional
+lot_threshold_sqft: 0                             # optional, integer; renders lot flag if set
+hubspot_contact_id: 0                             # optional, HubSpot contact ID
