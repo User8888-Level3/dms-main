@@ -71,3 +71,41 @@ def test_build_verification_stamp_partial():
     # If only MLS or only RPR is present, treat as verified (any official source)
     stamp = build_verification_stamp(mls_provided=True, rpr_provided=False)
     assert "verified" in stamp.lower()
+
+
+def test_empty_web_sources_renders_none(tmp_path):
+    """Empty web_sources should render '(none)', not an empty string."""
+    out = tmp_path / "MARKER.md"
+    write_output_marker(
+        out_path=out,
+        address="X",
+        client="Y",
+        mode="analyze",
+        mls_provided=True,
+        rpr_provided=True,
+        fh_passed=True,
+        web_sources=[],
+    )
+    text = out.read_text()
+    assert "Web supplements: (none)" in text
+
+
+def test_timestamp_includes_timezone(tmp_path):
+    """Audit trail must record timezone, not just naive local time."""
+    import re
+    out = tmp_path / "MARKER.md"
+    write_output_marker(
+        out_path=out,
+        address="X",
+        client="Y",
+        mode="analyze",
+        mls_provided=True,
+        rpr_provided=True,
+        fh_passed=True,
+        web_sources=[],
+    )
+    text = out.read_text()
+    # Timestamp line should match: "**Generated:** YYYY-MM-DD HH:MM TZ" with non-empty TZ
+    m = re.search(r"\*\*Generated:\*\* \d{4}-\d{2}-\d{2} \d{2}:\d{2} (\S+)", text)
+    assert m is not None, f"timestamp line missing or malformed in: {text[:200]}"
+    assert m.group(1), "timezone field is empty"

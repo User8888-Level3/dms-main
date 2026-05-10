@@ -29,9 +29,9 @@ def write_output_marker(
     fh_passed: bool,
     web_sources: Iterable[str],
 ) -> None:
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M %Z").strip()
+    timestamp = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M %Z")
     stamp = build_verification_stamp(mls_provided, rpr_provided)
-    web_list = ", ".join(web_sources) if web_sources else "(none)"
+    web_list = ", ".join(web_sources) or "(none)"
 
     content = f"""# Output Marker
 
