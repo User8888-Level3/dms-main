@@ -58,3 +58,35 @@ def test_send_via_hermes_non_fatal_on_failure():
         # Should not raise
         result = send_via_hermes(message="Test", chat_id="5883909804")
         assert result is False  # signals failure but doesn't raise
+
+
+def test_send_via_hermes_uses_stdin_for_message():
+    """Message body is passed via stdin (input= kwarg), not env. Lets curl --data-urlencode 'text@-' read it."""
+    with patch("notify_telegram.subprocess.run") as run_mock:
+        run_mock.return_value.returncode = 0
+        send_via_hermes(message="Hello world", chat_id="5883909804")
+        kwargs = run_mock.call_args.kwargs
+        assert kwargs.get("input") == "Hello world"
+        # env= must NOT be passed — would replace parent env and lose SSH_AUTH_SOCK
+        assert "env" not in kwargs
+
+
+def test_send_via_hermes_remote_cmd_uses_text_at_dash():
+    """Remote curl reads message from stdin via 'text@-', not from a $MESSAGE env var."""
+    with patch("notify_telegram.subprocess.run") as run_mock:
+        run_mock.return_value.returncode = 0
+        send_via_hermes(message="Test", chat_id="5883909804")
+        cmd = run_mock.call_args.args[0]
+        # cmd[0]='ssh', cmd[1]=host, cmd[2]=remote shell command string
+        remote = cmd[2]
+        assert "text@-" in remote
+        assert "$MESSAGE" not in remote
+
+
+def test_send_via_hermes_rejects_invalid_chat_id():
+    """Defense-in-depth: chat_id must be digit-only (with optional leading minus)."""
+    with patch("notify_telegram.subprocess.run") as run_mock:
+        # Should NOT call subprocess at all — returns False immediately
+        result = send_via_hermes(message="Test", chat_id="; rm -rf /")
+        assert result is False
+        assert not run_mock.called
