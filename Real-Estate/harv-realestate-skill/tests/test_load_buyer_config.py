@@ -22,6 +22,8 @@ def test_load_minimal_config(fixtures_dir):
     assert config.get("max_price") is None
     assert config.get("preferred_areas") == []
     assert config.get("must_haves") == []
+    assert config.get("nice_to_haves") == []
+    assert config.get("deal_breakers") == []
 
 
 def test_missing_frontmatter_raises(fixtures_dir):
@@ -46,3 +48,16 @@ def test_invalid_role_raises(tmp_path):
     bad.write_text("---\nclient_name: X\nclient_role: investor\n---\n")
     with pytest.raises(BuyerConfigError, match="client_role"):
         load_buyer_config(bad)
+
+
+def test_missing_file_raises(tmp_path):
+    with pytest.raises(BuyerConfigError, match="not found"):
+        load_buyer_config(tmp_path / "does_not_exist.md")
+
+
+def test_no_trailing_newline_parses_ok(tmp_path):
+    """A file whose final character is `---` (no trailing newline) should still parse."""
+    path = tmp_path / "no_newline.md"
+    path.write_bytes(b'---\nclient_name: "X"\nclient_role: buyer\n---')
+    config = load_buyer_config(path)
+    assert config["client_name"] == "X"

@@ -19,6 +19,8 @@ def load_buyer_config(client_md_path):
         raise BuyerConfigError(f"CLIENT.md not found at {path}")
 
     text = path.read_text()
+    if not text.endswith("\n"):
+        text += "\n"
     if not text.startswith("---\n"):
         raise BuyerConfigError(f"No frontmatter found in {path}. Expected YAML between --- markers.")
 
