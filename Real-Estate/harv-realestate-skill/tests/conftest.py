@@ -1,9 +1,15 @@
 """Shared pytest fixtures for harv-realestate tests."""
 
-import pytest
+import sys
 from pathlib import Path
 
+import pytest
+
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
+SCRIPTS_DIR = Path(__file__).parent.parent / "scripts"
+
+# Make scripts/ importable from any test file without per-file sys.path manipulation.
+sys.path.insert(0, str(SCRIPTS_DIR))
 
 
 @pytest.fixture
@@ -23,5 +29,5 @@ def sample_buyer_config():
         "nice_to_haves": ["4+ bedrooms"],
         "deal_breakers": ["Solar PPA"],
         "lot_threshold_sqft": 6000,
-        "hubspot_contact_id": 483788088001,
+        "hubspot_contact_id": 999999999999,
     }
