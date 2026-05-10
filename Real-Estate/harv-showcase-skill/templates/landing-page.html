@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}} | HarvRealtor.com</title>
+<meta name="description" content="{{BEDS}} bed, {{BATHS}} bath home at {{ADDRESS}}, {{CITY}} {{STATE}} {{ZIP}}. Listed at {{PRICE}}. Contact Harv Balu, REALTOR.">
+<meta property="og:title" content="{{ADDRESS}}, {{CITY}} {{STATE}} {{ZIP}} | HarvRealtor.com">
+<meta property="og:description" content="{{BEDS}} bed, {{BATHS}} bath, {{SQFT}} sqft home listed at {{PRICE}}.">
+<meta property="og:image" content="{{HERO_IMAGE_URL}}">
+<meta property="og:type" content="website">
+<link rel="canonical" href="{{LISTING_URL}}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #2D2D2D;
+  --gold: #D4AF37;
+  --gold2: #B88A1E;
+  --gold-soft: #c9a44b;
+  --page: #F2F2F2;
+  --bg: #FFFFFF;
+  --cream: #f3efe6;
+  --border: #e8e2d3;
+  --ink-black: #0d0c0a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, Arial, sans-serif; color: var(--ink); background: var(--page); line-height: 1.6; }
+h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; }
+
+/* TOPBAR */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--ink-black); padding: 12px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-brand { font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 700; color: var(--gold); letter-spacing: 1px; text-decoration: none; }
+.topbar-cta { background: var(--gold); color: var(--ink-black); font-size: 13px; font-weight: 600; padding: 8px 18px; border-radius: 4px; text-decoration: none; }
+.topbar-cta:hover { background: var(--gold2); }
+
+/* HERO */
+.hero { width: 100%; max-height: 480px; overflow: hidden; }
+.hero img { width: 100%; height: auto; display: block; object-fit: cover; }
+
+/* MAIN */
+.main { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+/* PRICE BAR */
+.price-bar { background: var(--bg); border-bottom: 3px solid var(--gold); padding: 24px 32px; margin-top: -4px; }
+.price-bar h1 { font-size: 24px; color: var(--ink); }
+.price-bar .price { font-family: 'Playfair Display', Georgia, serif; font-size: 32px; color: var(--gold2); margin-top: 4px; }
+.price-bar .status { display: inline-block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 4px 12px; border-radius: 3px; margin-left: 12px; background: #e8f5e9; color: #2e7d32; vertical-align: middle; }
+
+/* DETAILS GRID */
+.details-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px;
+  margin: 24px 0; overflow: hidden;
+}
+.detail-cell { background: var(--bg); padding: 16px; text-align: center; }
+.detail-cell .value { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 700; color: var(--ink); }
+.detail-cell .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-top: 4px; }
+
+/* SECTION */
+.section { background: var(--bg); border-radius: 8px; padding: 32px; margin: 24px 0; border: 1px solid var(--border); }
+.section h2 { font-size: 22px; color: var(--ink); margin-bottom: 16px; }
+.section h2 .accent { color: var(--gold2); }
+
+/* GALLERY */
+.gallery { display: flex; gap: 8px; overflow-x: auto; padding: 8px 0; }
+.gallery img { height: 160px; width: auto; border-radius: 6px; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: border-color 0.2s; }
+.gallery img:hover { border-color: var(--gold); }
+
+/* HIGHLIGHTS */
+.highlights { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.highlight-card { padding: 16px; border: 1px solid var(--border); border-radius: 6px; }
+.highlight-card .icon { font-size: 24px; margin-bottom: 8px; }
+.highlight-card h3 { font-size: 15px; margin-bottom: 6px; }
+.highlight-card p { font-size: 14px; color: #666; line-height: 1.5; }
+
+/* CALCULATOR */
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.calc-field label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 4px; }
+.calc-field input, .calc-field select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 4px;
+  font-family: 'Inter', system-ui, sans-serif; font-size: 15px; color: var(--ink);
+}
+.calc-result { text-align: center; padding: 20px; background: var(--cream); border-radius: 6px; margin-top: 16px; }
+.calc-result .amount { font-family: 'Playfair Display', Georgia, serif; font-size: 36px; font-weight: 700; color: var(--gold2); }
+.calc-result .label { font-size: 13px; color: #888; margin-top: 4px; }
+
+/* AGENT CARD */
+.agent-card { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.agent-photo { width: 80px; height: 80px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', Georgia, serif; font-size: 28px; color: var(--ink-black); font-weight: 700; flex-shrink: 0; }
+.agent-info h3 { font-size: 18px; }
+.agent-info .title { font-size: 13px; color: var(--gold-soft); }
+.agent-info .details { font-size: 13px; color: #888; margin-top: 4px; }
+.agent-ctas { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.btn-gold { display: inline-block; background: var(--gold); color: var(--ink-black); font-weight: 600; font-size: 14px; padding: 12px 28px; border-radius: 4px; text-decoration: none; }
+.btn-gold:hover { background: var(--gold2); }
+.btn-outline { display: inline-block; border: 2px solid var(--gold); color: var(--gold2); font-weight: 600; font-size: 14px; padding: 10px 26px; border-radius: 4px; text-decoration: none; }
+.btn-outline:hover { background: var(--cream); }
+
+/* FOOTER */
+.footer { background: var(--ink-black); color: #999; text-align: center; padding: 24px; margin-top: 32px; font-size: 12px; line-height: 1.8; }
+.footer a { color: var(--gold-soft); text-decoration: none; }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .price-bar h1 { font-size: 20px; }
+  .price-bar .price { font-size: 26px; }
+  .details-grid { grid-template-columns: repeat(3, 1fr); }
+  .highlights { grid-template-columns: 1fr; }
+  .calc-grid { grid-template-columns: 1fr; }
+  .agent-card { flex-direction: column; text-align: center; }
+  .gallery img { height: 120px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a href="https://HarvRealtor.com" class="topbar-brand">HarvRealtor.com</a>
+  <a href="tel:5106003425" class="topbar-cta">Call Harv</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <img src="{{HERO_IMAGE_URL}}" alt="{{ADDRESS}}, {{CITY}} {{STATE}}">
+</div>
+
+<div class="main">
+
+<!-- PRICE BAR -->
+<div class="price-bar">
+  <h1>{{ADDRESS}}</h1>
+  <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+    <span class="price">{{PRICE}}</span>
+    <span class="status">Active</span>
+  </div>
+  <div style="font-size:14px; color:#888; margin-top:6px;">{{CITY}}, {{STATE}} {{ZIP}}</div>
+</div>
+
+<!-- DETAILS GRID -->
+<div class="details-grid">
+  <div class="detail-cell"><div class="value">{{BEDS}}</div><div class="label">Beds</div></div>
+  <div class="detail-cell"><div class="value">{{BATHS}}</div><div class="label">Baths</div></div>
+  <div class="detail-cell"><div class="value">{{SQFT}}</div><div class="label">Sq Ft</div></div>
+  <div class="detail-cell"><div class="value">{{LOT_SIZE}}</div><div class="label">Lot</div></div>
+  <div class="detail-cell"><div class="value">{{YEAR_BUILT}}</div><div class="label">Built</div></div>
+  <div class="detail-cell"><div class="value">{{PROP_TYPE}}</div><div class="label">Type</div></div>
+</div>
+
+<!-- GALLERY -->
+<div class="section">
+  <h2>Photo <span class="accent">Gallery</span></h2>
+  <div class="gallery" id="gallery">
+    <!-- GALLERY_IMAGE_START -->
+    <img src="{{GALLERY_IMG_URL}}" alt="{{ADDRESS}} photo" onclick="document.querySelector('.hero img').src=this.src">
+    <!-- GALLERY_IMAGE_END -->
+  </div>
+</div>
+
+<!-- RARE FIND / SUMMARY -->
+<div class="section">
+  <h2>Rare <span class="accent">Find</span></h2>
+  <p style="font-size:15px; line-height:1.7; color:#444;">{{SUMMARY}}</p>
+</div>
+
+<!-- HIGHLIGHTS -->
+<div class="section">
+  <h2>Property <span class="accent">Highlights</span></h2>
+  <div class="highlights">
+    <!-- HIGHLIGHT_START -->
+    <div class="highlight-card">
+      <div class="icon">{{HIGHLIGHT_ICON}}</div>
+      <h3>{{HIGHLIGHT_TITLE}}</h3>
+      <p>{{HIGHLIGHT_TEXT}}</p>
+    </div>
+    <!-- HIGHLIGHT_END -->
+  </div>
+</div>
+
+<!-- PAYMENT CALCULATOR -->
+<div class="section">
+  <h2>Payment <span class="accent">Calculator</span></h2>
+  <div class="calc-grid">
+    <div class="calc-field">
+      <label>Home Price</label>
+      <input type="text" id="calcPrice" value="{{PRICE_RAW}}" oninput="calcPayment()">
+    </div>
+    <div class="calc-field">
+      <label>Down Payment (%)</label>
+      <input type="number" id="calcDown" value="20" min="0" max="100" oninput="calcPayment()">
+    </div>
+    <div class="calc-field">
+      <label>Interest Rate (%)</label>
+      <input type="number" id="calcRate" value="6.5" step="0.125" oninput="calcPayment()">
+    </div>
+    <div class="calc-field">
+      <label>Loan Term</label>
+      <select id="calcTerm" onchange="calcPayment()">
+        <option value="360">30 years</option>
+        <option value="180">15 years</option>
+      </select>
+    </div>
+  </div>
+  <div class="calc-result">
+    <div class="amount" id="calcResult">--</div>
+    <div class="label">Estimated Monthly Payment (P&amp;I)</div>
+  </div>
+</div>
+
+<!-- AGENT CARD -->
+<div class="section">
+  <div class="agent-card">
+    <div class="agent-photo">HB</div>
+    <div class="agent-info">
+      <h3>Harv Balu</h3>
+      <div class="title">REALTOR | GRI, CIPS, PSA, FTBS</div>
+      <div class="details">Realty Experts | DRE# 02195792</div>
+    </div>
+  </div>
+  <div class="agent-ctas">
+    <a href="tel:5106003425" class="btn-gold">Call 510-600-3425</a>
+    <a href="{{LISTING_URL}}" class="btn-outline">View Full Details</a>
+  </div>
+</div>
+
+</div><!-- .main -->
+
+<!-- FOOTER -->
+<div class="footer">
+  Harv Balu, REALTOR | Realty Experts | DRE# 02195792<br>
+  <a href="tel:5106003425">510-600-3425</a> &middot;
+  <a href="mailto:homes@HarvRealtor.com">homes@HarvRealtor.com</a> &middot;
+  <a href="https://HarvRealtor.com">HarvRealtor.com</a><br>
+  {{MLS_NUMBER}}
+</div>
+
+<script>
+function calcPayment() {
+  var priceStr = document.getElementById('calcPrice').value.replace(/[^0-9.]/g, '');
+  var price = parseFloat(priceStr) || 0;
+  var down = parseFloat(document.getElementById('calcDown').value) || 0;
+  var rate = parseFloat(document.getElementById('calcRate').value) || 0;
+  var term = parseInt(document.getElementById('calcTerm').value) || 360;
+  var loan = price * (1 - down / 100);
+  var monthlyRate = rate / 100 / 12;
+  var payment = 0;
+  if (monthlyRate > 0 && term > 0 && loan > 0) {
+    payment = loan * (monthlyRate * Math.pow(1 + monthlyRate, term)) / (Math.pow(1 + monthlyRate, term) - 1);
+  }
+  document.getElementById('calcResult').textContent = '$' + Math.round(payment).toLocaleString('en-US');
+}
+document.addEventListener('DOMContentLoaded', calcPayment);
+</script>
+
+</body>
+</html>
