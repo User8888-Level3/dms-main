@@ -59,6 +59,17 @@ A `fair_housing_scrub.py` script also runs over the assembled output as a second
 
 ---
 
+## Phase 0: Data Source Check (HARV BALU OVERRIDE)
+
+For each address being compared, check the per-property subfolder for MLS-*.pdf and RPR-*.pdf.
+
+For any address WITHOUT either MLS or RPR PDFs, ASK the user:
+"No MLS/RPR PDFs found for <address>. Run that property in PRELIMINARY mode (web data only)? [Y/n]"
+
+The compare output marker degrades to PRELIMINARY if ANY of the compared properties is preliminary.
+
+---
+
 ## PURPOSE
 
 Choosing between two properties is one of the hardest decisions in real estate. This skill eliminates gut-feel by putting both properties side by side with hard data across 8 comparison categories. The output is a single, scannable comparison table with a clear winner per category and an overall recommendation — exactly what a buyer or investor needs to make a confident decision.

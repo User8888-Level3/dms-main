@@ -59,6 +59,16 @@ A `fair_housing_scrub.py` script also runs over the assembled output as a second
 
 ---
 
+## Phase 0: Data Source Check (HARV BALU OVERRIDE)
+
+`quick` mode is web-only by default — it runs in <60s for fast screening.
+
+If the user hasn't supplied MLS/RPR PDFs, set output marker to PRELIMINARY automatically (no prompt). Quick mode is intentionally first-pass.
+
+If the user HAS supplied MLS/RPR PDFs in the property subfolder, use them as the data anchor and stamp output as MLS/RPR (verified).
+
+---
+
 ## PURPOSE
 
 Not every property decision needs a 100-line report. Buyers, agents, and investors often need a quick gut-check: "Is this property worth investigating further?" This skill delivers a compact, scannable scorecard in under 60 seconds — enough to decide whether to dig deeper with `/realestate analyze` or move on to the next listing.
