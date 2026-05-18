@@ -1,0 +1,427 @@
+#!/usr/bin/env python3
+"""School-Broker Telegram bot — polls for messages, runs `claude -p` in workspace, replies.
+
+v2 (2026-05-16 evening): added voice in (Groq Whisper STT) + voice out (ElevenLabs TTS).
+Voice in → voice out. Text in → text out. Both modes also get text alongside for readability.
+
+Stateless: each message is a fresh `claude -p` invocation. No conversation memory between turns.
+Allowlist: only the user(s) in TELEGRAM_ALLOWED_USERS from .env. Other messages are silently ignored.
+
+Designed to run inside tmux session `claud-school-bot` for persistence. Auto-restart on crash via the
+wrapper: `~/.school/scripts/school-bot-loop.sh`.
+
+Env required (from ~/.school/.env):
+  TELEGRAM_BOT_TOKEN       — from @BotFather
+  TELEGRAM_ALLOWED_USERS   — comma-separated chat IDs (numeric)
+  SCHOOL_WORKDIR        — workspace path (default ~/workspaces/School-Broker)
+  CLAUDE_BIN               — path to claude binary (default ~/.npm-global/bin/claude)
+  GROQ_API_KEY             — for voice→text via Whisper Large v3 Turbo
+  ELEVENLABS_API_KEY       — for text→voice via Turbo v2.5
+  ELEVENLABS_VOICE_ID      — Harv's PVC clone voice ID
+"""
+import json
+import os
+import shlex
+import signal
+import subprocess
+import sys
+import threading
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+import uuid
+
+
+_claude_lock = threading.Lock()
+
+ENV_PATH = os.path.expanduser("~/.school/.env")
+STATE_PATH = os.path.expanduser("~/.school/bot-state.json")
+LOG_PATH = os.path.expanduser("~/.school/logs/bot.log")
+TELEGRAM_API = "https://api.telegram.org/bot{token}/{method}"
+LONG_POLL_TIMEOUT = 60
+CLAUDE_TIMEOUT = 600
+TTS_MAX_CHARS = 1500  # Cap TTS payload to keep ElevenLabs cost + Telegram voice latency reasonable
+
+os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
+
+
+def log(msg):
+    ts = time.strftime("%Y-%m-%d %H:%M:%S")
+    line = f"[{ts}] {msg}\n"
+    sys.stdout.write(line)
+    sys.stdout.flush()
+    with open(LOG_PATH, "a") as f:
+        f.write(line)
+
+
+def read_env():
+    env = {}
+    with open(ENV_PATH) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            k, _, v = line.partition("=")
+            env[k.strip()] = v
+    return env
+
+
+def load_state():
+    try:
+        with open(STATE_PATH) as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"last_update_id": 0}
+
+
+def save_state(state):
+    tmp = STATE_PATH + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(state, f)
+    os.replace(tmp, STATE_PATH)
+
+
+def tg_api(token, method, **params):
+    url = TELEGRAM_API.format(token=token, method=method)
+    data = urllib.parse.urlencode(params).encode()
+    req = urllib.request.Request(url, data=data)
+    try:
+        with urllib.request.urlopen(req, timeout=LONG_POLL_TIMEOUT + 10) as resp:
+            return json.load(resp)
+    except urllib.error.HTTPError as e:
+        log(f"Telegram HTTPError {e.code}: {e.read().decode()[:200]}")
+        return None
+    except urllib.error.URLError as e:
+        log(f"Telegram URLError: {e}")
+        return None
+
+
+def split_for_telegram(text, limit=4000):
+    chunks = []
+    while text:
+        if len(text) <= limit:
+            chunks.append(text)
+            break
+        cut = text.rfind("\n", 0, limit)
+        if cut < limit // 2:
+            cut = text.rfind(" ", 0, limit)
+        if cut < limit // 2:
+            cut = limit
+        chunks.append(text[:cut])
+        text = text[cut:].lstrip()
+    return chunks
+
+
+def send_message(token, chat_id, text):
+    for chunk in split_for_telegram(text):
+        r = tg_api(token, "sendMessage", chat_id=chat_id, text=chunk)
+        if r is None or not r.get("ok"):
+            log(f"sendMessage failed (chunk len={len(chunk)}): {r}")
+
+
+# ----- voice helpers (new in v2) -----
+
+def tg_download_file(token, file_id, suffix=".ogg"):
+    """Look up Telegram file path via getFile, then download bytes. Returns local path."""
+    r = tg_api(token, "getFile", file_id=file_id)
+    if not r or not r.get("ok"):
+        log(f"getFile failed for {file_id}: {r}")
+        return None
+    file_path = r["result"]["file_path"]
+    url = f"https://api.telegram.org/file/bot{token}/{file_path}"
+    local_path = f"/tmp/tgvoice-{uuid.uuid4().hex}{suffix}"
+    try:
+        with urllib.request.urlopen(url, timeout=60) as resp, open(local_path, "wb") as f:
+            f.write(resp.read())
+        return local_path
+    except Exception as e:
+        log(f"tg_download_file error: {e}")
+        return None
+
+
+def transcribe_with_groq(api_key, audio_path):
+    """POST audio to Groq Whisper Large v3 Turbo. Returns transcript text or None."""
+    cmd = [
+        "curl", "-s", "--fail-with-body",
+        "https://api.groq.com/openai/v1/audio/transcriptions",
+        "-H", f"Authorization: Bearer {api_key}",
+        "-F", f"file=@{audio_path}",
+        "-F", "model=whisper-large-v3-turbo",
+        "-F", "response_format=json",
+    ]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        if proc.returncode != 0:
+            log(f"Groq STT exit {proc.returncode}: {(proc.stdout or proc.stderr)[:200]}")
+            return None
+        data = json.loads(proc.stdout)
+        return (data.get("text") or "").strip()
+    except Exception as e:
+        log(f"Groq STT exception: {type(e).__name__}: {e}")
+        return None
+
+
+def tts_with_elevenlabs(api_key, voice_id, text):
+    """POST text to ElevenLabs Turbo v2.5. Saves MP3 to /tmp and returns path."""
+    mp3_path = f"/tmp/ttsout-{uuid.uuid4().hex}.mp3"
+    payload = json.dumps({
+        "text": text,
+        "model_id": "eleven_turbo_v2_5",
+        "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
+    })
+    cmd = [
+        "curl", "-s", "--fail-with-body",
+        f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+        "-H", f"xi-api-key: {api_key}",
+        "-H", "Content-Type: application/json",
+        "-H", "Accept: audio/mpeg",
+        "-d", payload,
+        "-o", mp3_path,
+    ]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        if proc.returncode != 0 or not os.path.exists(mp3_path) or os.path.getsize(mp3_path) < 100:
+            # Read first bytes which may contain error JSON
+            preview = ""
+            try:
+                with open(mp3_path, "rb") as f:
+                    preview = f.read(300).decode("utf-8", errors="replace")
+            except Exception:
+                pass
+            log(f"ElevenLabs TTS exit {proc.returncode}: {preview[:200]}")
+            try: os.unlink(mp3_path)
+            except FileNotFoundError: pass
+            return None
+        return mp3_path
+    except Exception as e:
+        log(f"ElevenLabs TTS exception: {type(e).__name__}: {e}")
+        return None
+
+
+def mp3_to_ogg(mp3_path):
+    """Convert MP3 → OGG/OPUS so Telegram delivers as 'voice message' (waveform, transcribe button)."""
+    ogg_path = mp3_path[:-4] + ".ogg"
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", mp3_path,
+           "-c:a", "libopus", "-b:a", "64k", "-application", "voip", ogg_path]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        if proc.returncode != 0:
+            log(f"ffmpeg exit {proc.returncode}: {proc.stderr[:200]}")
+            return None
+        return ogg_path
+    except Exception as e:
+        log(f"ffmpeg exception: {type(e).__name__}: {e}")
+        return None
+
+
+def send_voice(token, chat_id, ogg_path):
+    """Telegram sendVoice via curl (multipart). Returns True on ok."""
+    cmd = [
+        "curl", "-s",
+        f"https://api.telegram.org/bot{token}/sendVoice",
+        "-F", f"chat_id={chat_id}",
+        "-F", f"voice=@{ogg_path}",
+    ]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        if proc.returncode != 0:
+            log(f"sendVoice exit {proc.returncode}: {proc.stderr[:200]}")
+            return False
+        result = json.loads(proc.stdout)
+        if not result.get("ok"):
+            log(f"sendVoice not ok: {result.get('description', proc.stdout[:200])}")
+            return False
+        return True
+    except Exception as e:
+        log(f"sendVoice exception: {type(e).__name__}: {e}")
+        return False
+
+
+# ----- Claude runner -----
+
+def run_claude(claude_bin, workdir, prompt):
+    with _claude_lock:
+        try:
+            proc = subprocess.run(
+                [claude_bin, "--dangerously-skip-permissions", "-p", prompt],
+                cwd=workdir,
+                capture_output=True,
+                text=True,
+                timeout=CLAUDE_TIMEOUT,
+                env={**os.environ, "PATH": f"{os.path.expanduser('~/.npm-global/bin')}:{os.environ.get('PATH', '')}"},
+            )
+            if proc.returncode != 0:
+                err = (proc.stderr or "").strip()
+                return proc.stdout.strip(), f"(claude exited {proc.returncode}; stderr: {err[:300]})"
+            return proc.stdout.strip(), None
+        except subprocess.TimeoutExpired:
+            return None, f"(timed out after {CLAUDE_TIMEOUT}s)"
+        except FileNotFoundError:
+            return None, f"(claude binary not found at {claude_bin})"
+        except Exception as e:
+            return None, f"({type(e).__name__}: {e})"
+
+
+# ----- surface-agnostic core -----
+
+def handle_message_core(env, surface, user_id, text, audio_path, reply_text_fn, reply_voice_fn):
+    """Surface-agnostic message handler. Telegram and Slack adapters both call this.
+
+    Args:
+        env: parsed ~/.school/.env dict.
+        surface: "telegram" or "slack" — used to pick the right ALLOWED_USERS env var.
+        user_id: caller's user id (int or str). Compared as str against allowlist.
+        text: text input (may be empty if audio_path is set; will be filled from transcript).
+        audio_path: local path to a voice/audio file, or None for text-only.
+        reply_text_fn: callable(str) -> None. Surface-specific text reply.
+        reply_voice_fn: callable(mp3_path: str) -> None. Surface-specific voice reply.
+    """
+    allowed_raw = env.get(f"{surface.upper()}_ALLOWED_USERS", "")
+    allowed = {x.strip() for x in allowed_raw.split(",") if x.strip()}
+    if str(user_id) not in allowed:
+        log(f"DENY surface={surface} user={user_id}: not in allowlist")
+        return
+
+    is_voice_in = audio_path is not None
+
+    if is_voice_in:
+        groq_key = env.get("GROQ_API_KEY", "").strip()
+        if not groq_key:
+            reply_text_fn("(voice received but GROQ_API_KEY not configured)")
+            return
+        log(f"RX VOICE surface={surface} user={user_id} audio={audio_path}")
+        transcript = transcribe_with_groq(groq_key, audio_path)
+        try: os.unlink(audio_path)
+        except FileNotFoundError: pass
+        if not transcript:
+            reply_text_fn("❌ couldn't transcribe")
+            return
+        text = transcript
+        reply_text_fn(f"📝 Heard: \"{text}\"")
+
+    if not text:
+        return
+
+    log(f"RX surface={surface} user={user_id} text={text[:80]!r} voice_in={is_voice_in}")
+
+    if text.lower() == "/start":
+        reply_text_fn("Hey Harv — Web Claude online. Send any message and I'll run it through Claude in your School-Broker workspace on Eleva. Send a voice message and I'll reply with voice.\n\nCommands: /status, /help")
+        return
+    if text.lower() == "/help":
+        reply_text_fn("Stateless: each message is a fresh Claude run. Workspace cwd: ~/workspaces/School-Broker. Skills: harv-realestate, harv-showcase, harv-email-drafter.\n\nVoice in → voice out (ElevenLabs TTS, Harv's voice). Voice transcribed via Groq Whisper.\n\nFor multi-turn / persistent context, SSH and attach to claud-school tmux instead.")
+        return
+    if text.lower() == "/status":
+        workdir = os.path.expanduser(env.get("SCHOOL_WORKDIR", "~/workspaces/School-Broker"))
+        file_count = sum(1 for _ in os.walk(workdir) for _ in _[2])
+        voice_ok = bool(env.get("GROQ_API_KEY") and env.get("ELEVENLABS_API_KEY") and env.get("ELEVENLABS_VOICE_ID"))
+        reply_text_fn(f"OK.\nWorkdir: {workdir}\nFiles: {file_count}\nVoice: {'enabled' if voice_ok else 'disabled'}\nLog: ~/.school/logs/bot.log")
+        return
+
+    workdir = os.path.expanduser(env.get("SCHOOL_WORKDIR", "~/workspaces/School-Broker"))
+    claude_bin = os.path.expanduser(env.get("CLAUDE_BIN", "~/.npm-global/bin/claude"))
+    if not is_voice_in:
+        reply_text_fn("⏳ Thinking…")
+    out, err = run_claude(claude_bin, workdir, text)
+    if err and not out:
+        reply_text_fn(f"❌ {err}")
+        log(f"ERR surface={surface} user={user_id}: {err}")
+        return
+    reply = out or "(no output)"
+    if err:
+        reply += f"\n\n— {err}"
+
+    # Voice in → voice out (with text alongside for skim)
+    if is_voice_in:
+        eleven_key = env.get("ELEVENLABS_API_KEY", "").strip()
+        eleven_voice = env.get("ELEVENLABS_VOICE_ID", "").strip()
+        if eleven_key and eleven_voice:
+            tts_text = reply if len(reply) <= TTS_MAX_CHARS else reply[:TTS_MAX_CHARS] + "… (continued in text)"
+            mp3 = tts_with_elevenlabs(eleven_key, eleven_voice, tts_text)
+            if mp3:
+                try:
+                    reply_voice_fn(mp3)
+                    log(f"TX VOICE surface={surface} user={user_id} reply_len={len(reply)} tts_len={len(tts_text)}")
+                    # Also send the full text so it's searchable
+                    reply_text_fn(reply)
+                    return
+                finally:
+                    try: os.unlink(mp3)
+                    except FileNotFoundError: pass
+        # Voice path failed — fall through to text
+        log(f"voice-out path failed for surface={surface} user={user_id}; falling back to text")
+
+    reply_text_fn(reply)
+    log(f"TX surface={surface} user={user_id} reply_len={len(reply)} voice_in={is_voice_in}")
+
+
+# ----- Telegram adapter -----
+
+def handle_message(env, token, update):
+    msg = update.get("message") or update.get("edited_message")
+    if not msg:
+        return
+    chat_id = msg["chat"]["id"]
+    user_id = msg.get("from", {}).get("id", chat_id)
+
+    voice = msg.get("voice")
+    audio_path = None
+    if voice is not None:
+        audio_path = tg_download_file(token, voice["file_id"], suffix=".ogg")
+        if not audio_path:
+            send_message(token, chat_id, "❌ couldn't download voice message")
+            return
+
+    text = (msg.get("text") or "").strip()
+
+    reply_text_fn = lambda t: send_message(token, chat_id, t)
+
+    def reply_voice_fn(mp3_path):
+        ogg = mp3_to_ogg(mp3_path)
+        if ogg:
+            try:
+                send_voice(token, chat_id, ogg)
+            finally:
+                try: os.unlink(ogg)
+                except FileNotFoundError: pass
+
+    handle_message_core(env, "telegram", user_id, text, audio_path, reply_text_fn, reply_voice_fn)
+
+
+def main():
+    env = read_env()
+    token = env.get("TELEGRAM_BOT_TOKEN", "").strip()
+    if not token:
+        log("FATAL: TELEGRAM_BOT_TOKEN not set in ~/.school/.env")
+        sys.exit(2)
+
+    state = load_state()
+    log(f"START — last_update_id={state['last_update_id']}")
+
+    while True:
+        try:
+            r = tg_api(token, "getUpdates",
+                       offset=state["last_update_id"] + 1,
+                       timeout=LONG_POLL_TIMEOUT,
+                       allowed_updates=json.dumps(["message", "edited_message"]))
+            if r is None or not r.get("ok"):
+                time.sleep(3)
+                continue
+            updates = r.get("result", [])
+            for update in updates:
+                state["last_update_id"] = update["update_id"]
+                try:
+                    handle_message(env, token, update)
+                except Exception as e:
+                    log(f"handle_message error: {type(e).__name__}: {e}")
+                save_state(state)
+        except KeyboardInterrupt:
+            log("STOP (KeyboardInterrupt)")
+            break
+        except Exception as e:
+            log(f"main loop error: {type(e).__name__}: {e}")
+            time.sleep(3)
+
+
+if __name__ == "__main__":
+    main()
