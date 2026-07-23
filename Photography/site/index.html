@@ -1,98 +1,361 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>Photography Index</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Archive — 23811 photographs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="theme-color" content="#08090b">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
-<header>
-  <h1>Photography Index</h1>
-  <span id="total-count">23811 photos</span>
-  <input id="search" type="search" placeholder="Search: filename, event, year:2024, kind:video, has:gps, camera:canon, sha1:abc" autocomplete="off">
-  <span id="search-status"></span>
+</head>
+<body data-page="home">
+
+<header class="top">
+  <div class="brand">
+    <a href="index.html" class="brand-mark">
+      <span class="brand-dot"></span>
+      <span class="brand-name">THE&nbsp;ARCHIVE</span>
+    </a>
+    <nav class="crumbs"><span class="crumb-current">All Years</span></nav>
+  </div>
+  <div class="search-shell">
+    <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <input id="search" type="search" placeholder="Search the archive — try canon, hawaii, year:2024, kind:video, has:gps" autocomplete="off" spellcheck="false">
+    <span id="search-status" aria-live="polite"></span>
+    <kbd class="kbd-hint">/</kbd>
+  </div>
 </header>
-<section id="browse">
-  <section class="year-grid">
+
+<main id="browse">
+
+  <section class="hero">
+    <p class="hero-eyebrow">A personal photographic archive</p>
+    <h1 class="hero-title">
+      <span class="hero-title-line">23,811</span>
+      <span class="hero-title-line hero-title-line--alt">photographs</span>
+    </h1>
+    <ul class="hero-meta">
+      <li><span class="meta-label">Span</span><span class="meta-value">2013 — 2025</span></li>
+      <li><span class="meta-label">Volume</span><span class="meta-value">734.8 GB</span></li>
+      <li><span class="meta-label">Years</span><span class="meta-value">13</span></li>
+    </ul>
+    <p class="hero-hint">Press <kbd>/</kbd> to search · click any year to explore</p>
+  </section>
+
+  <section class="year-grid" aria-label="Years">
     
-    <a class="year-tile" href="years/2013.html">
-      <img src="thumbs/2013/050313_Disney/5b/5b274480706c93f8dfe2ffe75bc96cafdbf97df4.jpg" loading="lazy">
-      <div class="count">806</div>
-      <div class="label">2013</div>
+    <a class="year-tile" href="years/2025.html" style="--i: 0">
+      <div class="year-tile__image">
+        <img src="thumbs/2025/061225/8d/8dd71efb49a7611073c46a2d25ef35203a5caee5.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2025</div>
+        <div class="year-tile__stats">
+          <span>553 photos</span>
+          <span class="dot">·</span>
+          <span>15.1 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2014.html">
-      <img src="thumbs/2014/2014_08_06/2c/2cf8b709b5522e89318f3f5f67aa06a93e5db40c.jpg" loading="lazy">
-      <div class="count">1069</div>
-      <div class="label">2014</div>
+    <a class="year-tile" href="years/2024.html" style="--i: 1">
+      <div class="year-tile__image">
+        <img src="thumbs/2024/2023_12_26-YouTube-iPhone 15 Plus/c5/c51e45d95163aa6ac01aa7db4cf77e9e639f8ab8.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2024</div>
+        <div class="year-tile__stats">
+          <span>1,600 photos</span>
+          <span class="dot">·</span>
+          <span>61.1 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2015.html">
-      <img src="thumbs/2015/Aug 2015/7b/7b2f8cfddf685ccdc094283058f27d5f071bff8f.jpg" loading="lazy">
-      <div class="count">792</div>
-      <div class="label">2015</div>
+    <a class="year-tile" href="years/2023.html" style="--i: 2">
+      <div class="year-tile__image">
+        <img src="thumbs/2023/Hawaii/e5/e599717acb960c65e6aeaa7bee61643f308e5441.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2023</div>
+        <div class="year-tile__stats">
+          <span>3,331 photos</span>
+          <span class="dot">·</span>
+          <span>98.5 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2016.html">
-      <img src="thumbs/2016/2016-01-01/86/86c120656be807ed91f5514914789c576de3d9f4.jpg" loading="lazy">
-      <div class="count">4158</div>
-      <div class="label">2016</div>
+    <a class="year-tile" href="years/2022.html" style="--i: 3">
+      <div class="year-tile__image">
+        <img src="thumbs/2022/20221223/c2/c21205e75a04e0855a07bbbb979aacfa35d73b92.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2022</div>
+        <div class="year-tile__stats">
+          <span>5,429 photos</span>
+          <span class="dot">·</span>
+          <span>96.1 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2017.html">
-      <img src="thumbs/2017/2017 03 12-Moon/21/210d8ade8a8a3f66865e12fba7119d566c667886.jpg" loading="lazy">
-      <div class="count">1491</div>
-      <div class="label">2017</div>
+    <a class="year-tile" href="years/2021.html" style="--i: 4">
+      <div class="year-tile__image">
+        <img src="thumbs/2021/20210502_Asha_Bday/b6/b6c3d0c71840967538f1759f67cdcc65049bf72c.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2021</div>
+        <div class="year-tile__stats">
+          <span>1,961 photos</span>
+          <span class="dot">·</span>
+          <span>52.1 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2018.html">
-      <img src="thumbs/2018/Gilroy - West Side - Vinca Ct, October 31, 2018 Halloween/0b/0b9e53b6f1c7c3559080bda443201d6a0a19a11c.jpg" loading="lazy">
-      <div class="count">256</div>
-      <div class="label">2018</div>
+    <a class="year-tile" href="years/2020.html" style="--i: 5">
+      <div class="year-tile__image">
+        <img src="thumbs/2020/20200902_Synology1019/91/91b64b5418f6cb6ed70343d0e2f1b8bca8fd62ce.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2020</div>
+        <div class="year-tile__stats">
+          <span>1,662 photos</span>
+          <span class="dot">·</span>
+          <span>210.0 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2019.html">
-      <img src="thumbs/2019/20190511_Asha_Bday/8c/8c498a331c33a8d4b4c33fac76ca507d95839cf6.jpg" loading="lazy">
-      <div class="count">703</div>
-      <div class="label">2019</div>
+    <a class="year-tile" href="years/2019.html" style="--i: 6">
+      <div class="year-tile__image">
+        <img src="thumbs/2019/20190703_Beach/13/13cf50159557df6d0b4c314f21c48c373996064c.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2019</div>
+        <div class="year-tile__stats">
+          <span>703 photos</span>
+          <span class="dot">·</span>
+          <span>11.4 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2020.html">
-      <img src="thumbs/2020/20200903_Synology1019/76/76ecb870f39226b1c4fa54d2d4df91479ed571c0.jpg" loading="lazy">
-      <div class="count">1662</div>
-      <div class="label">2020</div>
+    <a class="year-tile" href="years/2018.html" style="--i: 7">
+      <div class="year-tile__image">
+        <img src="thumbs/2018/Sep 03 2018/0c/0c787cfc598782c587afdd2e62c89aadb6e81121.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2018</div>
+        <div class="year-tile__stats">
+          <span>256 photos</span>
+          <span class="dot">·</span>
+          <span>2.8 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2021.html">
-      <img src="thumbs/2021/20210502_Asha_Bday/4d/4d02c1c0bbb806a764444079e7dbd49238529ab5.jpg" loading="lazy">
-      <div class="count">1961</div>
-      <div class="label">2021</div>
+    <a class="year-tile" href="years/2017.html" style="--i: 8">
+      <div class="year-tile__image">
+        <img src="thumbs/2017/2017 05 19 - Levin County Park/05/05d4ba244809014953d309ad642a6acd6197797a.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2017</div>
+        <div class="year-tile__stats">
+          <span>1,491 photos</span>
+          <span class="dot">·</span>
+          <span>27.7 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2022.html">
-      <img src="thumbs/2022/Deck Peoject/a6/a6074284c1737dbb10a8974fcd4225dd5e4a9d74.jpg" loading="lazy">
-      <div class="count">5429</div>
-      <div class="label">2022</div>
+    <a class="year-tile" href="years/2016.html" style="--i: 9">
+      <div class="year-tile__image">
+        <img src="thumbs/2016/2016-01-25/87/8754cd2a70286d6a99a5e6cb02f28ebb7e92816d.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2016</div>
+        <div class="year-tile__stats">
+          <span>4,158 photos</span>
+          <span class="dot">·</span>
+          <span>89.5 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2023.html">
-      <img src="thumbs/2023/Hawaii/1a/1a842b651ce6ad1e11690cc4c5b7365f07e935ac.jpg" loading="lazy">
-      <div class="count">3331</div>
-      <div class="label">2023</div>
+    <a class="year-tile" href="years/2015.html" style="--i: 10">
+      <div class="year-tile__image">
+        <img src="thumbs/2015/Dec 2015/5a/5a6156bc3447c4dda223be6e6dd2c166582349f5.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2015</div>
+        <div class="year-tile__stats">
+          <span>792 photos</span>
+          <span class="dot">·</span>
+          <span>52.0 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2024.html">
-      <img src="thumbs/2024/20240313/7f/7f257a63c2de9b0f4925f84059a87810d094d48b.jpg" loading="lazy">
-      <div class="count">1600</div>
-      <div class="label">2024</div>
+    <a class="year-tile" href="years/2014.html" style="--i: 11">
+      <div class="year-tile__image">
+        <img src="thumbs/2014/2014_04_18_19/ba/bac0cc0a4cb0b3a26315f9c5b494dc41a95a3386.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2014</div>
+        <div class="year-tile__stats">
+          <span>1,069 photos</span>
+          <span class="dot">·</span>
+          <span>13.5 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
-    <a class="year-tile" href="years/2025.html">
-      <img src="thumbs/2025/061325-Five-Finger-Lake/84/8462cf2c828d15f9b2d8e8c71b0246ea25b8937d.jpg" loading="lazy">
-      <div class="count">553</div>
-      <div class="label">2025</div>
+    <a class="year-tile" href="years/2013.html" style="--i: 12">
+      <div class="year-tile__image">
+        <img src="thumbs/2013/Aug2013_Ponselle/3c/3c82e10fd535d6172dafe8e8deae5672f13f207f.jpg" loading="lazy" alt="">
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">2013</div>
+        <div class="year-tile__stats">
+          <span>806 photos</span>
+          <span class="dot">·</span>
+          <span>4.9 GB</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     
   </section>
-</section>
-<section id="results" hidden>
-  <h2 class="event-header" id="results-header"></h2>
+
+  <footer class="page-foot">
+    <span>23,811 photos · 734.8 GB indexed</span>
+    <span class="foot-links">
+      <a href="duplicates.html">duplicates</a>
+      <span class="dot">·</span>
+      <a href="https://teamrealtyexperts.com" target="_blank" rel="noopener">REALTY EXPERTS®</a>
+    </span>
+  </footer>
+
+</main>
+
+<section id="results" hidden aria-label="Search results">
+  <header class="results-head">
+    <h2 id="results-header"></h2>
+    <button class="btn btn--ghost" id="results-clear" type="button">clear search</button>
+  </header>
   <div class="photo-grid" id="results-grid"></div>
 </section>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photo detail">
+  <div class="lightbox__backdrop" data-close></div>
+  <div class="lightbox__shell">
+    <button class="lightbox__nav lightbox__nav--prev" data-prev aria-label="Previous photo">‹</button>
+    <figure class="lightbox__stage">
+      <img class="lightbox__image" alt="">
+      <figcaption class="lightbox__caption"></figcaption>
+    </figure>
+    <aside class="lightbox__panel">
+      <header class="lightbox__panel-head">
+        <span class="lightbox__kind" data-kind>IMAGE</span>
+        <button class="lightbox__close" data-close aria-label="Close">×</button>
+      </header>
+
+      <h3 class="lightbox__filename" data-field="filename">—</h3>
+      <p class="lightbox__event" data-field="event">—</p>
+
+      <div class="lightbox__actions">
+        <button class="action-btn action-btn--primary" data-action="reveal" type="button">
+          <svg class="action-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="action-btn__label">Open Folder</span>
+        </button>
+        <button class="action-btn action-btn--primary" data-action="open" type="button">
+          <svg class="action-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="action-btn__label">Open File</span>
+        </button>
+      </div>
+      <p class="lightbox__actions-hint">opens on your Mac · requires /Volumes/Pictures-Vol3 mounted</p>
+
+      <dl class="lightbox__meta">
+        <div class="meta-row">
+          <dt>Date taken</dt>
+          <dd data-field="date">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Camera</dt>
+          <dd data-field="camera">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Size</dt>
+          <dd data-field="size">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Dimensions</dt>
+          <dd data-field="dims">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Type</dt>
+          <dd data-field="ext">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>GPS</dt>
+          <dd data-field="gps">—</dd>
+        </div>
+      </dl>
+
+      <div class="lightbox__path">
+        <div class="lightbox__path-label">
+          <span>Original location</span>
+          <button class="copy-btn" data-copy="path" aria-label="Copy path">copy</button>
+        </div>
+        <code class="lightbox__path-value" data-field="path">—</code>
+      </div>
+
+      <div class="lightbox__path">
+        <div class="lightbox__path-label">
+          <span>SHA‑1</span>
+          <button class="copy-btn" data-copy="sha1" aria-label="Copy SHA1">copy</button>
+        </div>
+        <code class="lightbox__path-value lightbox__path-value--mono" data-field="sha1">—</code>
+      </div>
+
+      <footer class="lightbox__foot">
+        <kbd>←</kbd><kbd>→</kbd> nav &nbsp;·&nbsp; <kbd>F</kbd> finder &nbsp;·&nbsp; <kbd>O</kbd> open &nbsp;·&nbsp; <kbd>C</kbd> copy &nbsp;·&nbsp; <kbd>Esc</kbd> close
+      </footer>
+    </aside>
+    <button class="lightbox__nav lightbox__nav--next" data-next aria-label="Next photo">›</button>
+  </div>
+</div>
+
 <script src="assets/search.js" defer></script>
+</body>
+</html>

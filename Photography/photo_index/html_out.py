@@ -15,21 +15,41 @@ _env = Environment(
 def generate_index(db: sqlite3.Connection) -> None:
     config.ensure_dirs()
     years_rows = db.execute("""
-      SELECT year, COUNT(*) as c
+      SELECT year, COUNT(*) as c, COALESCE(SUM(bytes),0) as b
       FROM files WHERE error IS NULL AND deleted_at IS NULL AND year IS NOT NULL
-      GROUP BY year ORDER BY year
+      GROUP BY year ORDER BY year DESC
     """).fetchall()
     years = []
-    for year, count in years_rows:
+    for year, count, year_bytes in years_rows:
         cover = db.execute("""
           SELECT thumb_rel FROM files WHERE year=? AND thumb_rel IS NOT NULL
             AND error IS NULL AND deleted_at IS NULL
           ORDER BY RANDOM() LIMIT 1
         """, (year,)).fetchone()
         thumb = f"thumbs/{cover[0]}" if cover else None
-        years.append({"year": year, "count": count, "cover_thumb": thumb})
-    total = db.execute("SELECT COUNT(*) FROM files WHERE error IS NULL AND deleted_at IS NULL").fetchone()[0]
-    html = _env.get_template("index.html").render(years=years, total_files=total)
+        years.append({
+            "year": year,
+            "count": count,
+            "cover_thumb": thumb,
+            "bytes_human": _human_bytes(year_bytes),
+        })
+    total = db.execute(
+        "SELECT COUNT(*), COALESCE(SUM(bytes),0) FROM files "
+        "WHERE error IS NULL AND deleted_at IS NULL"
+    ).fetchone()
+    total_count = total[0]
+    total_bytes_human = _human_bytes(total[1])
+    span = db.execute(
+        "SELECT MIN(year), MAX(year) FROM files "
+        "WHERE error IS NULL AND deleted_at IS NULL AND year IS NOT NULL"
+    ).fetchone()
+    html = _env.get_template("index.html").render(
+        years=years,
+        total_files=total_count,
+        total_bytes_human=total_bytes_human,
+        first_year=span[0],
+        last_year=span[1],
+    )
     (config.SITE_DIR / "index.html").write_text(html)
 
 
@@ -39,19 +59,37 @@ def generate_year(db: sqlite3.Connection, year: int) -> None:
       FROM files WHERE year=? AND error IS NULL AND deleted_at IS NULL
       ORDER BY event_folder, exif_taken_at, filename
     """, (year,)).fetchall()
-    # group by event
     events_map: dict[str, list] = {}
     for r in rows:
         events_map.setdefault(r[3], []).append({
             "id": r[0], "sha1": r[1], "thumb_rel": r[2], "kind": r[4], "filename": r[5],
         })
-    events = [{"name": name, "count": len(files), "files": files}
+    events = [{"name": name, "count": len(files), "slug": _event_slug(name), "files": files}
               for name, files in events_map.items()]
+    year_bytes = db.execute(
+        "SELECT COALESCE(SUM(bytes),0) FROM files WHERE year=? AND error IS NULL AND deleted_at IS NULL",
+        (year,),
+    ).fetchone()[0]
     html = _env.get_template("year.html").render(
-        year=year, events=events, total=len(rows), thumb_root="../thumbs")
+        year=year,
+        events=events,
+        total=len(rows),
+        bytes_human=_human_bytes(year_bytes),
+        thumb_root="../thumbs",
+    )
     out = config.SITE_DIR / "years" / f"{year}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
+
+
+def _event_slug(name: str) -> str:
+    """Slugify an event-folder name for use as a URL anchor.
+
+    Spaces and most punctuation become '-'; we keep alnum, dash, underscore.
+    """
+    import re
+    slug = re.sub(r"[^A-Za-z0-9_-]+", "-", name).strip("-")
+    return slug or "event"
 
 
 def generate_search_json(db: sqlite3.Connection) -> list[dict]:
@@ -71,7 +109,8 @@ def generate_search_json(db: sqlite3.Connection) -> list[dict]:
     for year in years:
         rows = db.execute("""
           SELECT id, sha1, filename, event_folder, exif_taken_at, exif_camera,
-                 exif_gps_lat, exif_gps_lon, kind, thumb_rel
+                 exif_gps_lat, exif_gps_lon, kind, thumb_rel,
+                 path, bytes, width, height
           FROM files
           WHERE year=? AND error IS NULL AND deleted_at IS NULL
           ORDER BY event_folder, exif_taken_at, filename
@@ -88,6 +127,10 @@ def generate_search_json(db: sqlite3.Connection) -> list[dict]:
                 "g": bool(r[6] is not None and r[7] is not None),
                 "k": r[8],                 # kind: image|raw|video
                 "t": r[9],                 # thumb_rel
+                "p": r[10],                # full original path
+                "b": r[11],                # bytes
+                "w": r[12],                # width
+                "h": r[13],                # height
             })
         out = out_dir / f"search-{year}.json"
         out.write_text(json.dumps(data, separators=(",", ":")))

@@ -1,44 +1,45 @@
 #!/bin/bash
-# Double-click this file to launch the Photo Index dashboard.
-# Starts a local HTTP server on port 8765 and opens the site in your default browser.
-# Close this Terminal window (or Ctrl+C) to stop the server.
+# Double-click to open the Photo Archive dashboard in your browser.
+#
+# Double-click to open the Photo Archive dashboard. It runs photo_server.py in a
+# foreground Terminal ON DEMAND. The background LaunchAgent was DISABLED 2026-06-27
+# because Google Drive can't reliably serve files from a launchd background process
+# ("Resource deadlock avoided"). Close the Terminal window to stop the server.
 
-set -eu
+set -u
 cd "$(dirname "$0")"
 
 PORT=8765
-SITE_DIR="site"
+URL="http://127.0.0.1:$PORT/"
+AGENT_PLIST="$HOME/Library/LaunchAgents/com.harv.photo-archive.plist"
 
-# Kill any stale server from a prior run (ignore errors)
-pkill -f "http.server $PORT" 2>/dev/null || true
-sleep 0.5
-
-# Verify venv
-if [ ! -x ".venv/bin/python" ]; then
-  echo "ERROR: Python venv not found at .venv/ — tell Claude to rebuild it."
-  read -n 1 -s -r -p "Press any key to close..."
-  exit 1
+# Check whether the server is already responding
+if curl -sS -o /dev/null -m 1.5 "$URL" 2>/dev/null; then
+  echo "Photo Archive server already running. Opening browser…"
+  open "$URL"
+  exit 0
 fi
 
-# Verify SMB mount (thumbs live there)
-if [ ! -d "/Volumes/Pictures-Vol3/.index/thumbs" ]; then
+echo "Photo Archive server not responding on $PORT — starting it in this window…"
+# NOTE: intentionally does NOT touch the LaunchAgent (it's disabled — GDrive deadlock).
+
+# Fallback: run the server right here so the dashboard still works.
+if [ -d "/Volumes/Pictures-Vol3/.index/thumbs" ]; then
+  :
+else
   echo "WARNING: /Volumes/Pictures-Vol3 is not mounted."
-  echo "Thumbnails will not load. Mount the Synology share first (Finder > Go > Connect to Server > smb://172.22.2.147/Pictures-Vol3)."
-  read -n 1 -s -r -p "Press any key to continue anyway, or Ctrl+C to quit..."
+  echo "Thumbs won't load and Open File/Open Folder buttons will fail."
+  echo "Mount the Synology share first: Finder > Go > Connect to Server > smb://172.22.2.147/Pictures-Vol3"
+  read -n 1 -s -r -p "Press any key to continue anyway, or Ctrl+C to quit..." || true
   echo
 fi
 
-URL="http://127.0.0.1:$PORT/"
 echo "================================================"
-echo " Photo Index Dashboard"
+echo " Photo Archive Dashboard (fallback mode)"
 echo " URL: $URL"
-echo " Keep this window open while browsing."
-echo " Close this window (or Ctrl+C) to stop."
+echo " Close this window to stop the server."
 echo "================================================"
-echo
-
-# Open browser after a brief delay so the server has a moment to bind
 ( sleep 1.2 && open "$URL" ) &
-
-# Run the server in the foreground so closing the window kills it
-exec ./.venv/bin/python -m http.server "$PORT" --bind 127.0.0.1 --directory "$SITE_DIR"
+PYBIN="/usr/local/bin/python3.13"
+[ -x "$PYBIN" ] || PYBIN="./.venv/bin/python"
+exec "$PYBIN" photo_server.py

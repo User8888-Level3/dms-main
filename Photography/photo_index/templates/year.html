@@ -1,17 +1,165 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>{{ year }} — Photography Index</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ year }} — The Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="theme-color" content="#08090b">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/style.css">
-<header><h1><a href="../index.html">← All Years</a> / {{ year }}</h1>
-        <span>{{ total }} photos</span></header>
-{% for event in events %}
-<h2 class="event-header">{{ event.name }} <span style="color:#666;font-weight:normal">· {{ event.count }}</span></h2>
-<div class="photo-grid">
-  {% for f in event.files %}
-  <a href="{{ thumb_root }}/{{ f.thumb_rel }}" target="_blank">
-    <img src="{{ thumb_root }}/{{ f.thumb_rel }}" loading="lazy" alt="">
-    {% if f.kind == 'video' %}<span class="video-badge">▶ VIDEO</span>{% endif %}
-  </a>
-  {% endfor %}
+</head>
+<body data-page="year" data-year="{{ year }}">
+
+<header class="top">
+  <div class="brand">
+    <a href="../index.html" class="brand-mark">
+      <span class="brand-dot"></span>
+      <span class="brand-name">THE&nbsp;ARCHIVE</span>
+    </a>
+    <nav class="crumbs">
+      <a href="../index.html">All Years</a>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-current">{{ year }}</span>
+    </nav>
+  </div>
+  <div class="search-shell">
+    <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <input id="search" type="search" placeholder="Search this year — filename, event, camera…" autocomplete="off" spellcheck="false">
+    <span id="search-status" aria-live="polite"></span>
+    <kbd class="kbd-hint">/</kbd>
+  </div>
+</header>
+
+<main class="year-page" id="browse">
+
+  <header class="year-hero">
+    <p class="hero-eyebrow">Year</p>
+    <h1 class="year-hero__num">{{ year }}</h1>
+    <ul class="hero-meta">
+      <li><span class="meta-label">Photographs</span><span class="meta-value">{{ "{:,}".format(total) }}</span></li>
+      <li><span class="meta-label">Volume</span><span class="meta-value">{{ bytes_human }}</span></li>
+      <li><span class="meta-label">Events</span><span class="meta-value">{{ events|length }}</span></li>
+    </ul>
+  </header>
+
+  <div class="year-body">
+
+    <aside class="event-nav" aria-label="Events in {{ year }}">
+      <h2 class="event-nav__title">Events</h2>
+      <ol class="event-nav__list">
+        {% for event in events %}
+        <li>
+          <a href="#evt-{{ event.slug }}" data-event-link="{{ event.slug }}">
+            <span class="event-nav__name">{{ event.name }}</span>
+            <span class="event-nav__count">{{ event.count }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ol>
+    </aside>
+
+    <section class="events-stack">
+      {% for event in events %}
+      <section class="event" id="evt-{{ event.slug }}">
+        <header class="event__head">
+          <h2 class="event__name">{{ event.name }}</h2>
+          <span class="event__count">{{ event.count }} {{ "photo" if event.count == 1 else "photos" }}</span>
+        </header>
+        <div class="photo-grid">
+          {% for f in event.files %}
+          <a class="photo-tile" href="#photo-{{ f.id }}" data-photo-id="{{ f.id }}" data-year="{{ year }}">
+            <img src="{{ thumb_root }}/{{ f.thumb_rel }}" loading="lazy" alt="{{ f.filename }}">
+            {% if f.kind == 'video' %}<span class="badge badge--video">▶ VIDEO</span>{% endif %}
+            {% if f.kind == 'raw' %}<span class="badge badge--raw">RAW</span>{% endif %}
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endfor %}
+    </section>
+
+  </div>
+
+  <footer class="page-foot">
+    <a class="foot-back" href="../index.html">← all years</a>
+    <span>{{ year }} · {{ "{:,}".format(total) }} photos · {{ bytes_human }}</span>
+  </footer>
+
+</main>
+
+<section id="results" hidden aria-label="Search results">
+  <header class="results-head">
+    <h2 id="results-header"></h2>
+    <button class="btn btn--ghost" id="results-clear" type="button">clear search</button>
+  </header>
+  <div class="photo-grid" id="results-grid"></div>
+</section>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photo detail">
+  <div class="lightbox__backdrop" data-close></div>
+  <div class="lightbox__shell">
+    <button class="lightbox__nav lightbox__nav--prev" data-prev aria-label="Previous photo">‹</button>
+    <figure class="lightbox__stage">
+      <img class="lightbox__image" alt="">
+      <figcaption class="lightbox__caption"></figcaption>
+    </figure>
+    <aside class="lightbox__panel">
+      <header class="lightbox__panel-head">
+        <span class="lightbox__kind" data-kind>IMAGE</span>
+        <button class="lightbox__close" data-close aria-label="Close">×</button>
+      </header>
+
+      <h3 class="lightbox__filename" data-field="filename">—</h3>
+      <p class="lightbox__event" data-field="event">—</p>
+
+      <div class="lightbox__actions">
+        <button class="action-btn action-btn--primary" data-action="reveal" type="button">
+          <svg class="action-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="action-btn__label">Open Folder</span>
+        </button>
+        <button class="action-btn action-btn--primary" data-action="open" type="button">
+          <svg class="action-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="action-btn__label">Open File</span>
+        </button>
+      </div>
+      <p class="lightbox__actions-hint">opens on your Mac · requires /Volumes/Pictures-Vol3 mounted</p>
+
+      <dl class="lightbox__meta">
+        <div class="meta-row"><dt>Date taken</dt><dd data-field="date">—</dd></div>
+        <div class="meta-row"><dt>Camera</dt><dd data-field="camera">—</dd></div>
+        <div class="meta-row"><dt>Size</dt><dd data-field="size">—</dd></div>
+        <div class="meta-row"><dt>Dimensions</dt><dd data-field="dims">—</dd></div>
+        <div class="meta-row"><dt>Type</dt><dd data-field="ext">—</dd></div>
+        <div class="meta-row"><dt>GPS</dt><dd data-field="gps">—</dd></div>
+      </dl>
+
+      <div class="lightbox__path">
+        <div class="lightbox__path-label">
+          <span>Original location</span>
+          <button class="copy-btn" data-copy="path" aria-label="Copy path">copy</button>
+        </div>
+        <code class="lightbox__path-value" data-field="path">—</code>
+      </div>
+
+      <div class="lightbox__path">
+        <div class="lightbox__path-label">
+          <span>SHA‑1</span>
+          <button class="copy-btn" data-copy="sha1" aria-label="Copy SHA1">copy</button>
+        </div>
+        <code class="lightbox__path-value lightbox__path-value--mono" data-field="sha1">—</code>
+      </div>
+
+      <footer class="lightbox__foot">
+        <kbd>←</kbd><kbd>→</kbd> nav &nbsp;·&nbsp; <kbd>F</kbd> finder &nbsp;·&nbsp; <kbd>O</kbd> open &nbsp;·&nbsp; <kbd>C</kbd> copy &nbsp;·&nbsp; <kbd>Esc</kbd> close
+      </footer>
+    </aside>
+    <button class="lightbox__nav lightbox__nav--next" data-next aria-label="Next photo">›</button>
+  </div>
 </div>
-{% endfor %}
+
+<script src="../assets/search.js" defer></script>
+</body>
+</html>

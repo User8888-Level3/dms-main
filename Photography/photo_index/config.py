@@ -1,6 +1,6 @@
 from pathlib import Path
 
-ROOT       = Path("/Users/harvinderbalu1/Library/CloudStorage/OneDrive-Personal/ClaudeCode/Photography")
+ROOT       = Path("/Users/harvinderbalu1/Library/CloudStorage/GoogleDrive-harvinder.balu@gmail.com/My Drive/ClaudeCode/Photography")
 MOUNT      = Path("/Volumes/Pictures-Vol3")
 DB_PATH    = ROOT / "index.db"
 THUMB_ROOT = MOUNT / ".index" / "thumbs"

@@ -1,7 +1,37 @@
 # Photography Index — Session State
 
-**Last updated:** 2026-04-23 (v1 COMPLETE — all 5 milestones shipped)
+**Last updated:** 2026-07-16 (dashboard repaired + "Light Table" redesign shipped)
 **Phase:** Feature-complete. Ongoing operations only.
+
+---
+
+## 2026-07-16 — dashboard repair + redesign (read before touching the site)
+
+**Google Drive strips symlink targets in this folder.** It zeroed both `site/thumbs` and
+`.venv/bin/python*`, which killed every thumbnail and stopped the server from launching.
+Expect this to recur.
+
+- `photo_server.py` now serves `/thumbs/` **directly from `config.THUMB_ROOT`**, so the
+  `site/thumbs` symlink is no longer load-bearing. It also sends `Cache-Control`
+  (`no-cache` for pages, 1-year immutable for SHA-1-addressed thumbs) — before this,
+  browsers showed days-stale pages after every regeneration.
+- If the venv dies: relink `python{,3,3.13}` → `/Library/Frameworks/Python.framework/Versions/3.13/bin/python3.13`.
+- **Open via `Photo-Dashboard.command`, never `file://`** — search + Open File/Folder need the server.
+
+**"Light Table" redesign** — graphite `#08090b` + focus-peaking lime `#cdf24c`,
+Bricolage Grotesque / Instrument Sans / Geist Mono, AF corner-bracket tile hovers,
+`FR 01` EXIF chips. Done in `photo_index/templates/` then regenerated (index + 13 year
+pages); `duplicates.html` inherits it via the shared stylesheet.
+
+⚠️ **CSS landmine:** never combine `background-attachment: fixed` with a blurred sticky
+header — that pair black-screens Chrome's compositor on macOS. The current CSS avoids
+both; grain is a fixed-position pseudo-element instead.
+
+⚠️ **Uncommitted:** these changes are working-tree only. Committing is recommended given
+Google Drive's track record in this folder.
+
+Full writeup: `session-2026-07-16-photo-archive-redesign.md` (GoogleDrive-ClaudeCode memory)
+· OneNote **Photography → Claude-Photo**.
 
 ---
 

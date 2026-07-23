@@ -1,26 +1,169 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>Photography Index</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Archive — {{ total_files }} photographs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="theme-color" content="#08090b">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
-<header>
-  <h1>Photography Index</h1>
-  <span id="total-count">{{ total_files }} photos</span>
-  <input id="search" type="search" placeholder="Search: filename, event, year:2024, kind:video, has:gps, camera:canon, sha1:abc" autocomplete="off">
-  <span id="search-status"></span>
+</head>
+<body data-page="home">
+
+<header class="top">
+  <div class="brand">
+    <a href="index.html" class="brand-mark">
+      <span class="brand-dot"></span>
+      <span class="brand-name">THE&nbsp;ARCHIVE</span>
+    </a>
+    <nav class="crumbs"><span class="crumb-current">All Years</span></nav>
+  </div>
+  <div class="search-shell">
+    <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <input id="search" type="search" placeholder="Search the archive — try canon, hawaii, year:2024, kind:video, has:gps" autocomplete="off" spellcheck="false">
+    <span id="search-status" aria-live="polite"></span>
+    <kbd class="kbd-hint">/</kbd>
+  </div>
 </header>
-<section id="browse">
-  <section class="year-grid">
+
+<main id="browse">
+
+  <section class="hero">
+    <p class="hero-eyebrow">A personal photographic archive</p>
+    <h1 class="hero-title">
+      <span class="hero-title-line">{{ "{:,}".format(total_files) }}</span>
+      <span class="hero-title-line hero-title-line--alt">photographs</span>
+    </h1>
+    <ul class="hero-meta">
+      <li><span class="meta-label">Span</span><span class="meta-value">{{ first_year }} — {{ last_year }}</span></li>
+      <li><span class="meta-label">Volume</span><span class="meta-value">{{ total_bytes_human }}</span></li>
+      <li><span class="meta-label">Years</span><span class="meta-value">{{ years|length }}</span></li>
+    </ul>
+    <p class="hero-hint">Press <kbd>/</kbd> to search · click any year to explore</p>
+  </section>
+
+  <section class="year-grid" aria-label="Years">
     {% for y in years %}
-    <a class="year-tile" href="years/{{ y.year }}.html">
-      {% if y.cover_thumb %}<img src="{{ y.cover_thumb }}" loading="lazy">{% endif %}
-      <div class="count">{{ y.count }}</div>
-      <div class="label">{{ y.year }}</div>
+    <a class="year-tile" href="years/{{ y.year }}.html" style="--i: {{ loop.index0 }}">
+      <div class="year-tile__image">
+        {% if y.cover_thumb %}<img src="{{ y.cover_thumb }}" loading="lazy" alt="">{% endif %}
+        <span class="year-tile__grain" aria-hidden="true"></span>
+      </div>
+      <div class="year-tile__caption">
+        <div class="year-tile__year">{{ y.year }}</div>
+        <div class="year-tile__stats">
+          <span>{{ "{:,}".format(y.count) }} photos</span>
+          <span class="dot">·</span>
+          <span>{{ y.bytes_human }}</span>
+        </div>
+      </div>
+      <span class="year-tile__arrow" aria-hidden="true">→</span>
     </a>
     {% endfor %}
   </section>
-</section>
-<section id="results" hidden>
-  <h2 class="event-header" id="results-header"></h2>
+
+  <footer class="page-foot">
+    <span>{{ "{:,}".format(total_files) }} photos · {{ total_bytes_human }} indexed</span>
+    <span class="foot-links">
+      <a href="duplicates.html">duplicates</a>
+      <span class="dot">·</span>
+      <a href="https://teamrealtyexperts.com" target="_blank" rel="noopener">REALTY EXPERTS®</a>
+    </span>
+  </footer>
+
+</main>
+
+<section id="results" hidden aria-label="Search results">
+  <header class="results-head">
+    <h2 id="results-header"></h2>
+    <button class="btn btn--ghost" id="results-clear" type="button">clear search</button>
+  </header>
   <div class="photo-grid" id="results-grid"></div>
 </section>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photo detail">
+  <div class="lightbox__backdrop" data-close></div>
+  <div class="lightbox__shell">
+    <button class="lightbox__nav lightbox__nav--prev" data-prev aria-label="Previous photo">‹</button>
+    <figure class="lightbox__stage">
+      <img class="lightbox__image" alt="">
+      <figcaption class="lightbox__caption"></figcaption>
+    </figure>
+    <aside class="lightbox__panel">
+      <header class="lightbox__panel-head">
+        <span class="lightbox__kind" data-kind>IMAGE</span>
+        <button class="lightbox__close" data-close aria-label="Close">×</button>
+      </header>
+
+      <h3 class="lightbox__filename" data-field="filename">—</h3>
+      <p class="lightbox__event" data-field="event">—</p>
+
+      <div class="lightbox__actions">
+        <button class="action-btn action-btn--primary" data-action="reveal" type="button">
+          <svg class="action-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="action-btn__label">Open Folder</span>
+        </button>
+        <button class="action-btn action-btn--primary" data-action="open" type="button">
+          <svg class="action-btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span class="action-btn__label">Open File</span>
+        </button>
+      </div>
+      <p class="lightbox__actions-hint">opens on your Mac · requires /Volumes/Pictures-Vol3 mounted</p>
+
+      <dl class="lightbox__meta">
+        <div class="meta-row">
+          <dt>Date taken</dt>
+          <dd data-field="date">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Camera</dt>
+          <dd data-field="camera">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Size</dt>
+          <dd data-field="size">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Dimensions</dt>
+          <dd data-field="dims">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>Type</dt>
+          <dd data-field="ext">—</dd>
+        </div>
+        <div class="meta-row">
+          <dt>GPS</dt>
+          <dd data-field="gps">—</dd>
+        </div>
+      </dl>
+
+      <div class="lightbox__path">
+        <div class="lightbox__path-label">
+          <span>Original location</span>
+          <button class="copy-btn" data-copy="path" aria-label="Copy path">copy</button>
+        </div>
+        <code class="lightbox__path-value" data-field="path">—</code>
+      </div>
+
+      <div class="lightbox__path">
+        <div class="lightbox__path-label">
+          <span>SHA‑1</span>
+          <button class="copy-btn" data-copy="sha1" aria-label="Copy SHA1">copy</button>
+        </div>
+        <code class="lightbox__path-value lightbox__path-value--mono" data-field="sha1">—</code>
+      </div>
+
+      <footer class="lightbox__foot">
+        <kbd>←</kbd><kbd>→</kbd> nav &nbsp;·&nbsp; <kbd>F</kbd> finder &nbsp;·&nbsp; <kbd>O</kbd> open &nbsp;·&nbsp; <kbd>C</kbd> copy &nbsp;·&nbsp; <kbd>Esc</kbd> close
+      </footer>
+    </aside>
+    <button class="lightbox__nav lightbox__nav--next" data-next aria-label="Next photo">›</button>
+  </div>
+</div>
+
 <script src="assets/search.js" defer></script>
+</body>
+</html>
