@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HARV BALU — Photographs from the Darkroom</title>
+<meta name="description" content="The photographic archive of Harv Balu — wolf moons and night skies, aquarium blues, golden-hour coastlines and machine-made artwork, all printed dark. Bay Area, California.">
+<meta name="theme-color" content="#100D0B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23100D0B'/%3E%3Ccircle cx='32' cy='29' r='11' fill='%23D9432F'/%3E%3Crect x='15' y='49' width='34' height='4' fill='%23E8A33D'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,100..900&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/landing.css">
+<script>document.documentElement.className += ' js';</script>
+</head>
+<body>
+
+<a class="skip" href="#sheets">SKIP TO THE CONTACT SHEETS</a>
+
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="mono-mark" href="/" aria-label="${site_name} — home">HB</a>
+  <nav class="bar-nav" aria-label="Primary">
+    <a href="/work">WORK</a>
+    <a href="#about">ABOUT</a>
+    <a href="mailto:${contact_email}">CONTACT</a>
+  </nav>
+  <span class="lamp" aria-hidden="true"><span class="lamp-dot"></span><span class="lamp-txt">SAFELIGHT&nbsp;ON</span></span>
+</header>
+
+<main id="top">
+
+  <!-- ── 01 · THE ROOM — safelight hero + drying reel ─────────────────── -->
+  <section class="hero" aria-label="Introduction">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <p class="hero-kicker">THE DARKROOM OF</p>
+      <h1 class="hero-title">${hero_name}</h1>
+      <p class="hero-sub">PHOTOGRAPHS DEVELOPED IN THE DARK — BAY AREA, CALIFORNIA</p>
+      <p class="hero-stats">${photo_total} FRAMES&nbsp;&nbsp;·&nbsp;&nbsp;${collection_count} COLLECTIONS&nbsp;&nbsp;·&nbsp;&nbsp;SAFELIGHT AMBER</p>
+      <p class="hero-scroll" aria-hidden="true">&#9660;&nbsp; SCROLL — THE LIGHTS STAY OFF</p>
+    </div>
+
+    <div class="reel">
+      <p class="reel-tag" aria-hidden="true">01 — FRESH OFF THE REEL · NEWEST FRAMES FIRST</p>
+      <div class="filmstrip" data-strip aria-hidden="true">
+        <div class="film-belt" data-belt>
+          <div class="film-track" data-track>
+${collage_tiles}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="bench" aria-hidden="true">TANK LOADED · ${photo_total} FRAMES · DEV 20.0&deg;C · STOP · FIX · WASH · HANG TO DRY · REPEAT</p>
+
+  <!-- ── 02 · CONTACT SHEETS — the collections ────────────────────────── -->
+  <section class="sheets" id="sheets" aria-labelledby="sheets-title">
+    <header class="sec-head rise">
+      <span class="sec-no" aria-hidden="true">02</span>
+      <h2 class="sec-title" id="sheets-title">CONTACT SHEETS</h2>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-note">${collection_count} SHEETS · ${photo_total} FRAMES</span>
+    </header>
+
+    <div class="sheet-grid">
+${collection_cards}
+    </div>
+
+    <div class="sheets-cta rise">
+      <a class="archive-link" href="/work">OPEN THE FULL ARCHIVE — ${photo_total} FRAMES &rarr;</a>
+    </div>
+  </section>
+
+  <!-- ── 03 · PROCESS NOTES — about ───────────────────────────────────── -->
+  <section class="about" id="about" aria-labelledby="about-title">
+    <header class="sec-head rise">
+      <span class="sec-no" aria-hidden="true">03</span>
+      <h2 class="sec-title" id="about-title">PROCESS NOTES</h2>
+      <span class="sec-rule" aria-hidden="true"></span>
+      <span class="sec-note">THE PRINTER, IN HIS OWN HAND</span>
+    </header>
+
+    <div class="about-cols rise">
+      <div class="about-bio">
+${about_html}
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>BASE</dt><dd>BAY AREA, CALIFORNIA</dd></div>
+        <div class="spec-row"><dt>ARCHIVE</dt><dd>${photo_total} FRAMES, COUNTING</dd></div>
+        <div class="spec-row"><dt>SHEETS</dt><dd>${collection_count} COLLECTIONS</dd></div>
+        <div class="spec-row"><dt>PROCESS</dt><dd>CAMERA · TELESCOPE · MACHINE</dd></div>
+        <div class="spec-row"><dt>SAFELIGHT</dt><dd>AMBER, ALWAYS ON</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ── 04 · CORRESPONDENCE — contact ────────────────────────────────── -->
+  <section class="contact" aria-labelledby="contact-title">
+    <div class="contact-glow" aria-hidden="true"></div>
+    <p class="sec-eyebrow rise" id="contact-title">04 — CORRESPONDENCE</p>
+    <a class="beacon rise" href="mailto:${contact_email}">KNOCK&nbsp;TWICE</a>
+    <p class="contact-mail rise">THE DOOR OPENS — ${contact_email}</p>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>&copy; ${year} ${site_name}</span>
+  <span class="foot-mid"><span class="foot-dot" aria-hidden="true"></span>SAFELIGHT STAYS ON</span>
+  <a href="/work">ARCHIVE &#8599;</a>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var doc = document;
+  var reduce = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { reduce = false; }
+
+  /* Filmstrip — clone the track once for a seamless reel, speed from width. */
+  var strip = doc.querySelector('[data-strip]');
+  var belt = doc.querySelector('[data-belt]');
+  var track = doc.querySelector('[data-track]');
+  if (strip && belt && track && !reduce && track.children.length > 2) {
+    var clone = track.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    belt.appendChild(clone);
+    var w = track.scrollWidth || 2400;
+    belt.style.animationDuration = Math.max(28, Math.round(w / 34)) + 's';
+    strip.classList.add('has-loop');
+    belt.classList.add('is-looping');
+  }
+
+  /* Develop-in — prints emerge from black as they enter the viewport. */
+  var targets = [].slice.call(doc.querySelectorAll('.rise, .collection-card'));
+  var reveal = function (el) { el.classList.add('is-dev'); };
+  if (reduce || !('IntersectionObserver' in window)) {
+    targets.forEach(reveal);
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { reveal(entry.target); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.16, rootMargin: '0px 0px -5% 0px' });
+    targets.forEach(function (el) { io.observe(el); });
+  }
+
+  /* Lights — staggered entrance for the hero and the reel. */
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { doc.body.classList.add('lit'); });
+  });
+})();
+</script>
+
+</body>
+</html>

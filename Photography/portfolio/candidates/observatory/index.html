@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HARV BALU — Photographs of Night &amp; Light · Bay Area</title>
+<meta name="description" content="The night archive of Bay Area photographer Harv Balu — moons and eclipses, deep-sea light, golden-hour water and luminous artwork, catalogued as plates in a private observatory.">
+<meta name="theme-color" content="#050505">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23050505'/><circle cx='32' cy='32' r='20' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-dasharray='2 5' opacity='.85'/><circle cx='32' cy='12' r='5' fill='%23F2EDE0'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Italiana&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/landing.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+  <a class="skip" href="#plates">Skip to photographs</a>
+
+  <div class="stars" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="$site_name — home"><span class="brand-h">H</span><span class="brand-dot">·</span><span class="brand-b">B</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="/work">Work</a>
+      <a href="#about">About</a>
+      <a href="mailto:$contact_email">Contact</a>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ── The dark before the light ─────────────────────────────────── -->
+    <section class="hero" aria-label="Introduction">
+      <div class="orbit" aria-hidden="true">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="98.4" stroke="#D4AF37" stroke-opacity=".3" stroke-width=".45" stroke-dasharray="1.2 5.4"/>
+          <circle cx="100" cy="1.6" r="1.7" fill="#EED688"/>
+        </svg>
+      </div>
+      <div class="helm">
+        <p class="overline">San Francisco Bay · 37.5° N — after dark</p>
+        <h1 class="name">$hero_name</h1>
+        <p class="tagline">Photographs of night and light</p>
+        <p class="tally"><span class="num">$photo_total</span> observations · <span class="num">$collection_count</span> collections</p>
+        <a class="cue" href="#plates"><span class="cue-line" aria-hidden="true"></span><span class="cue-word">Descend</span></a>
+      </div>
+    </section>
+
+    <!-- ── I · The Plates — the descent through recent work ──────────── -->
+    <section id="plates" class="survey" aria-label="Recent photographs">
+      <header class="sect reveal">
+        <span class="sect-no" aria-hidden="true">I</span>
+        <h2 class="sect-title">The Plates</h2>
+        <p class="sect-sub">Recent observations — newest first</p>
+      </header>
+      <div class="plates">
+$collage_tiles
+      </div>
+    </section>
+
+    <!-- ── II · The Atlas — collections ──────────────────────────────── -->
+    <section id="atlas" class="atlas-wrap" aria-label="Collections">
+      <header class="sect reveal">
+        <span class="sect-no" aria-hidden="true">II</span>
+        <h2 class="sect-title">The Atlas</h2>
+        <p class="sect-sub">$collection_count collections · $photo_total photographs</p>
+      </header>
+      <div class="atlas">
+$collection_cards
+      </div>
+      <p class="all reveal"><a href="/work">Enter the full archive<span class="arr" aria-hidden="true"> →</span></a></p>
+    </section>
+
+    <!-- ── III · Field Notes — about ─────────────────────────────────── -->
+    <section id="about" class="notes" aria-label="About Harv Balu">
+      <header class="sect reveal">
+        <span class="sect-no" aria-hidden="true">III</span>
+        <h2 class="sect-title">Field Notes</h2>
+        <p class="sect-sub">The photographer, in brief</p>
+      </header>
+      <div class="seal reveal" aria-hidden="true"><span class="seal-rule"></span>H·B<span class="seal-rule"></span></div>
+      <div class="bio reveal">
+$about_html
+      </div>
+    </section>
+
+    <!-- ── IV · Correspondence — contact ─────────────────────────────── -->
+    <section id="contact" class="signal" aria-label="Contact">
+      <header class="sect reveal">
+        <span class="sect-no" aria-hidden="true">IV</span>
+        <h2 class="sect-title">Correspondence</h2>
+        <p class="sect-sub">Prints · licensing · commissions</p>
+      </header>
+      <p class="signal-line reveal">For prints, licensing, or a conversation about the night —</p>
+      <p class="mail-wrap reveal"><a class="mail" href="mailto:$contact_email">$contact_email</a></p>
+    </section>
+
+  </main>
+
+  <footer class="colophon">
+    <p class="signoff">The photographs are the only light.</p>
+    <p class="legal">© $year $site_name — Bay Area, California</p>
+    <p class="coords" aria-hidden="true">37.5° N · 122.0° W</p>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+  var mmReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var mmWide = window.matchMedia('(min-width: 900px)');
+  var mmFine = window.matchMedia('(pointer: fine)');
+  var all = function (sel) { return [].slice.call(document.querySelectorAll(sel)); };
+  var targets = all('.tile, .collection-card, .reveal');
+
+  function siblingIndex(el) {
+    var i = 0, n = el;
+    while ((n = n.previousElementSibling)) { i += 1; }
+    return i;
+  }
+
+  /* Staggered ignition: the three hero bodies flare in sequence after the
+     name resolves (desktop); atlas cards ripple lit in reading order. */
+  function igniteDelay(el) {
+    if (mmReduce.matches) { return 0; }
+    if (mmWide.matches) {
+      if (el.classList.contains('tile--1')) { return 1500; }
+      if (el.classList.contains('tile--2')) { return 2050; }
+      if (el.classList.contains('tile--3')) { return 2550; }
+    }
+    if (el.classList.contains('collection-card')) {
+      return Math.min(siblingIndex(el) * 110, 440);
+    }
+    return 0;
+  }
+
+  if (mmReduce.matches || !('IntersectionObserver' in window)) {
+    targets.forEach(function (el) { el.classList.add('is-lit'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        var el = entry.target;
+        io.unobserve(el);
+        var wait = igniteDelay(el);
+        if (wait > 0) {
+          setTimeout(function () { el.classList.add('is-lit'); }, wait);
+        } else {
+          el.classList.add('is-lit');
+        }
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.12 });
+    targets.forEach(function (el) { io.observe(el); });
+  }
+
+  /* Parallax drift — bodies float at their served data-speed depths.
+     Desktop fine pointers only; transform-only writes, rAF-throttled;
+     base positions cached so getBoundingClientRect never feeds back. */
+  if (mmReduce.matches || !mmFine.matches) { return; }
+  var tiles = all('.plates .tile').map(function (el) {
+    var speed = parseFloat(el.getAttribute('data-speed'));
+    if (!isFinite(speed)) { speed = 0.18; }
+    return { el: el, speed: speed, base: 0, half: 0 };
+  });
+  if (tiles.length === 0) { return; }
+  var ticking = false;
+  var resizeTimer = 0;
+
+  function measure() {
+    var sy = window.pageYOffset;
+    tiles.forEach(function (t) {
+      t.el.style.transform = 'none';
+      var r = t.el.getBoundingClientRect();
+      t.base = r.top + sy;
+      t.half = r.height / 2;
+    });
+  }
+
+  function drift() {
+    ticking = false;
+    var sy = window.pageYOffset;
+    var mid = window.innerHeight / 2;
+    tiles.forEach(function (t) {
+      var delta = (t.base + t.half - sy) - mid;
+      var off = delta * t.speed * -0.14;
+      if (off > 60) { off = 60; } else if (off < -60) { off = -60; }
+      t.el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
+    });
+  }
+
+  function queue() {
+    if (!ticking) { ticking = true; window.requestAnimationFrame(drift); }
+  }
+
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { measure(); queue(); }, 180);
+  });
+  window.addEventListener('load', function () { measure(); queue(); });
+  measure();
+  queue();
+})();
+</script>
+</body>
+</html>

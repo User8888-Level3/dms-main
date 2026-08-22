@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — HARV BALU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Geist+Mono:wght@400;500&amp;family=Instrument+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/admin.css">
+</head>
+<body class="admin" data-page="admin">
+
+<header class="adm-top">
+  <a class="adm-wordmark" href="/">HARV BALU</a>
+  <span class="adm-top__label">ADMIN</span>
+  <a class="adm-top__link" href="/work">VIEW SITE →</a>
+</header>
+
+<div class="adm-shell">
+
+  <aside class="adm-side" aria-label="Library navigation">
+    <p class="adm-side__status" id="side-status">Loading…</p>
+
+    <ul class="adm-nav" id="nav-top">
+      <li>
+        <button class="adm-folder is-active" type="button" id="nav-all">
+          <span class="adm-folder__name">All</span>
+          <span class="adm-folder__counts" id="all-counts"></span>
+        </button>
+      </li>
+    </ul>
+
+    <p class="adm-side__label">Collections</p>
+    <ul class="adm-nav" id="folder-list"></ul>
+
+    <p class="adm-side__label">Links</p>
+    <ul class="adm-nav">
+      <li>
+        <button class="adm-folder" type="button" id="nav-shares">
+          <span class="adm-folder__name">Shares</span>
+          <span class="adm-folder__counts" id="shares-count"></span>
+        </button>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="adm-main">
+
+    <div class="adm-toolbar">
+      <h1 class="adm-title" id="view-title">All</h1>
+      <span class="adm-count" id="view-count">Loading…</span>
+
+      <div class="adm-tools" id="photo-tools">
+        <button class="btn btn--ghost" type="button" id="sel-all">Select all</button>
+        <button class="btn btn--ghost" type="button" id="sel-none">None</button>
+        <span class="adm-selcount" id="sel-count"></span>
+        <button class="btn btn--solid" type="button" id="btn-public">Make Public</button>
+        <button class="btn" type="button" id="btn-private">Make Private</button>
+        <button class="btn" type="button" id="btn-artwork">Artwork ✦</button>
+        <button class="btn" type="button" id="btn-share">Share…</button>
+      </div>
+
+      <input class="adm-filter" id="filter" type="search"
+             placeholder="Filter filename…" autocomplete="off" spellcheck="false"
+             aria-label="Filter by filename">
+    </div>
+
+    <section class="adm-grid" id="grid" aria-label="Photos"></section>
+    <p class="adm-empty" id="grid-empty" hidden>No photos in this view.</p>
+
+    <section class="adm-shares" id="shares-view" hidden aria-label="Share links">
+      <table class="shares-table">
+        <thead>
+          <tr>
+            <th class="th-thumb">Photo</th>
+            <th>File</th>
+            <th>Created</th>
+            <th>Expires</th>
+            <th>Status</th>
+            <th class="th-actions"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="shares-body"></tbody>
+      </table>
+      <p class="adm-empty" id="shares-empty" hidden>No share links yet. Hover a photo and hit ⤴ Share.</p>
+    </section>
+
+  </main>
+</div>
+
+<dialog class="share-dlg" id="share-dialog" aria-labelledby="share-dlg-title">
+  <div class="share-dlg__head">
+    <h2 class="share-dlg__title" id="share-dlg-title">Share photo</h2>
+    <button class="share-dlg__close" type="button" id="share-close" aria-label="Close dialog">×</button>
+  </div>
+  <p class="share-dlg__file" id="share-file"></p>
+
+  <form id="share-form" novalidate>
+    <fieldset class="share-dlg__expiry">
+      <legend>Link expires</legend>
+      <label class="share-dlg__opt"><input type="radio" name="expires" value="24h"> 24 hours</label>
+      <label class="share-dlg__opt"><input type="radio" name="expires" value="7d" checked> 7 days</label>
+      <label class="share-dlg__opt"><input type="radio" name="expires" value="30d"> 30 days</label>
+      <label class="share-dlg__opt"><input type="radio" name="expires" value="never"> Never expires</label>
+      <label class="share-dlg__opt share-dlg__opt--custom">
+        <input type="radio" name="expires" value="custom"> Custom date
+        <input type="date" id="share-date" disabled aria-label="Custom expiry date">
+      </label>
+    </fieldset>
+
+    <label class="share-dlg__notewrap">
+      <span class="share-dlg__notelabel">Note <em>(optional — who is this for?)</em></span>
+      <input type="text" id="share-note" maxlength="200" placeholder="e.g. for Priya" autocomplete="off">
+    </label>
+
+    <div class="share-dlg__actions">
+      <button class="btn" type="button" id="share-cancel">Cancel</button>
+      <button class="btn btn--solid" type="submit" id="share-create">Create link</button>
+    </div>
+  </form>
+
+  <div class="share-dlg__result" id="share-result" hidden>
+    <p class="share-dlg__result-label">Link ready — <span id="share-expiry-line"></span></p>
+    <div class="share-dlg__urlrow">
+      <input type="text" id="share-url" readonly aria-label="Share link URL">
+      <button class="btn btn--solid" type="button" id="share-copy">Copy</button>
+    </div>
+    <div class="share-dlg__actions">
+      <button class="btn" type="button" id="share-done">Done</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<template id="tile-tpl">
+  <figure class="ph-tile">
+    <div class="ph-tile__frame">
+      <img class="ph-tile__img" loading="lazy" decoding="async" draggable="false" alt="">
+      <input type="checkbox" class="ph-tile__check" aria-label="Select photo">
+      <span class="ph-tile__video" hidden aria-hidden="true">▶</span>
+      <span class="ph-tile__art" hidden title="Artwork">✦</span>
+      <span class="chip chip--public" hidden>Public</span>
+      <span class="chip chip--private" hidden><svg viewBox="0 0 10 12" width="8" height="10" aria-hidden="true"><rect x="1.2" y="5" width="7.6" height="6" fill="currentColor"></rect><path d="M3 5V3.4a2 2 0 0 1 4 0V5" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg>Private</span>
+      <button class="ph-tile__share" type="button" title="Create share link">⤴ Share</button>
+    </div>
+    <figcaption class="ph-tile__name"></figcaption>
+  </figure>
+</template>
+
+<template id="folder-tpl">
+  <li>
+    <button class="adm-folder" type="button">
+      <span class="adm-folder__name"></span>
+      <span class="adm-folder__art" hidden title="Contains artwork">✦</span>
+      <span class="adm-folder__counts"></span>
+    </button>
+  </li>
+</template>
+
+<template id="share-row-tpl">
+  <tr class="share-row">
+    <td class="share-row__thumbcell"><img class="share-row__thumb" loading="lazy" decoding="async" alt=""></td>
+    <td class="share-row__filecell">
+      <span class="share-row__file"></span>
+      <span class="share-row__note"></span>
+    </td>
+    <td class="share-row__created"></td>
+    <td class="share-row__expires"></td>
+    <td><span class="chip chip--status"></span></td>
+    <td class="share-row__actions">
+      <button class="btn btn--tiny share-row__copy" type="button">Copy</button>
+      <button class="btn btn--tiny btn--danger share-row__revoke" type="button">Revoke</button>
+    </td>
+  </tr>
+</template>
+
+<script src="/static/admin.js" defer></script>
+</body>
+</html>

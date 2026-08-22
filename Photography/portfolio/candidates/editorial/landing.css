@@ -1,0 +1,691 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   HARV BALU — "THE ANNUAL"  ·  landing candidate: editorial counterpoint
+   A photography annual as a web page: a warm paper masthead band wraps a
+   deep ink field where the photographs sit as numbered, foil-captioned
+   plates. Fraunces (wonky serif) + Fragment Mono. Gold = foil stamping.
+
+   Hard rules honoured:
+   - NO background-attachment: fixed, NO backdrop-filter anywhere.
+   - Only transform / opacity / filter are animated.
+   - prefers-reduced-motion collapses all motion.
+   - No horizontal scroll down to 375px.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --ink:        #0E0D0B;   /* brand near-black — the cover cloth              */
+  --ink-2:      #131009;   /* contents spread — one shade warmer              */
+  --paper:      #EDE6D8;   /* warm ecru book paper (NOT the rejected cream)   */
+  --paper-dim:  #B7AF9F;   /* secondary text on ink — AA                      */
+  --gold:       #D4AF37;   /* foil on ink — AA on ink                         */
+  --gold-ink:   #6D5411;   /* foil impression on paper — AA on paper          */
+  --ink-soft:   #3E392B;   /* secondary text on paper — AA                    */
+  --hair-gold:  rgba(212, 175, 55, .28);
+  --hair-paper: rgba(237, 230, 216, .12);
+  --hair-ink:   rgba(14, 13, 11, .3);
+
+  --serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --mono:  'Fragment Mono', ui-monospace, 'Courier New', monospace;
+
+  --px:   clamp(1.1rem, 5.5vw, 6.5rem);      /* page gutter                  */
+  --gap:  clamp(.9rem, 2.2vw, 2.2rem);       /* plate grid gutter            */
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+/* ─── base ────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { display: block; max-width: 100%; }
+figure, p, h1, h2 { margin: 0; }
+a { color: inherit; }
+
+::selection { background: var(--gold); color: var(--ink); }
+
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.masthead :focus-visible,
+.colophon :focus-visible { outline-color: var(--ink); }
+
+.skip {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 2000;
+  padding: .7rem 1rem;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.skip:focus-visible { top: 1rem; outline-color: var(--paper); }
+
+/* small shared pieces */
+.kicker {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.kicker-paper { color: var(--gold-ink); }
+
+/* ─── fixed chrome: nav (blend-inverted) + book spine ─────────────────────── */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .95rem clamp(1rem, 3vw, 2rem);
+  mix-blend-mode: difference;      /* self-inverts over paper, ink and plates */
+  color: #E8E1D2;
+  pointer-events: none;            /* the links restore their own hit areas   */
+}
+.nav a { pointer-events: auto; }
+
+.brandmark {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 640;
+  font-size: 1.15rem;
+  letter-spacing: -.01em;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: clamp(1rem, 2.4vw, 2rem);
+  font-family: var(--mono);
+  font-size: .62rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+.nav-links a { text-decoration: none; padding: .5rem 0; }
+.nav-links a:hover { text-decoration: underline; text-underline-offset: 5px; }
+
+.spine {
+  position: fixed;
+  top: 50%;
+  left: .95rem;
+  z-index: 890;
+  transform: translateY(-50%) rotate(180deg);
+  writing-mode: vertical-rl;
+  mix-blend-mode: difference;
+  color: #E8E1D2;
+  font-family: var(--mono);
+  font-size: .56rem;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ─── the masthead — paper band, foil rules, stamped name ─────────────────── */
+
+.masthead {
+  position: relative;
+  z-index: 0;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 4.6rem var(--px) 3rem;
+  border-bottom: 1px solid var(--hair-ink);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.rule-double {
+  height: 6px;
+  margin-top: .7rem;
+  border-top: 2px solid var(--gold-ink);
+  border-bottom: 1px solid var(--gold-ink);
+}
+
+.masthead-name {
+  margin: 1rem 0 1.4rem;
+  font-family: var(--serif);
+  font-weight: 580;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(3.1rem, 15vw, 15rem);
+  line-height: .84;
+  letter-spacing: -.022em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+/* foil-stamp entrance — spans created by the tiny inline script */
+.js .masthead-name .ch {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(.28em);
+  transition: opacity .55s var(--ease), transform .62s var(--ease);
+  transition-delay: calc(var(--i) * 42ms + 80ms);
+}
+.js.stamped .masthead-name .ch { opacity: 1; transform: none; }
+.ch-sp { white-space: pre; }
+
+/* the foot text lives in the right 32% while the cover plate occupies grid
+   columns 1–9 (≤ 66.7%) — both are percentages of the same box, so the plate
+   can rise straight through the band and slice the rule without ever
+   touching a word */
+.masthead-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .85rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hair-ink);
+}
+
+.masthead-kicker {
+  width: 32%;
+  min-width: 0;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.dek {
+  width: 32%;
+  min-width: 0;
+  text-align: right;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 480;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(1.02rem, 1.6vw, 1.3rem);
+  line-height: 1.42;
+  color: var(--gold-ink);
+}
+
+/* ─── the ink field — cover plate + asymmetric woven plates ───────────────── */
+
+.field {
+  position: relative;
+  z-index: 1;                       /* lets the cover plate straddle the seam */
+  background: var(--ink);
+  padding: 0 var(--px) 7rem;
+}
+
+.cover-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap);
+  counter-reset: plate;
+}
+
+.folio { display: contents; }       /* every tile joins the outer grid        */
+
+/* cover blurbs — sits right of the cover plate */
+.cover-meta {
+  grid-column: 10 / 13;
+  grid-row: 1;
+  padding-top: clamp(2rem, 6vh, 4.5rem);
+  min-width: 0;
+}
+
+.meta-num { margin-top: 1.5rem; }
+.meta-num .num {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(2.7rem, 4.6vw, 4.6rem);
+  line-height: 1;
+  color: var(--paper);
+}
+.meta-unit {
+  display: block;
+  margin-top: .45rem;
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.meta-rule { width: 3.2rem; margin: 2rem 0 1.4rem; border-top: 1px solid var(--hair-gold); }
+
+.meta-note {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--paper-dim);
+}
+
+/* plates — server markup: <figure class="tile"><img …></figure>
+   Each becomes a captioned plate: flex column, CSS counter caption. */
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  min-width: 0;
+  counter-increment: plate;
+}
+
+.tile img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+  transition: filter .45s var(--ease);
+}
+.tile:hover img { filter: brightness(1.09); }
+
+.tile::after {
+  content: 'Plate ' counter(plate, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: .56rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: .78;
+  transition: opacity .3s var(--ease);
+}
+.tile:hover::after { opacity: 1; }
+
+/* the woven spread — explicit rows, alternating pulls create the overlap.
+   Plate 01 is the cover: oversized, straddling the paper/ink seam. */
+
+.folio .tile:nth-child(1) {
+  grid-column: 1 / 9;
+  grid-row: 1 / span 2;
+  margin-top: calc(clamp(3.5rem, 13vh, 8.5rem) * -1);
+}
+.folio .tile:nth-child(1) img { aspect-ratio: 4 / 5; }
+
+.folio .tile:nth-child(2)  { grid-column: 10 / 13; grid-row: 2; margin-top: clamp(4rem, 16vh, 10rem); }
+.folio .tile:nth-child(2) img { aspect-ratio: 3 / 4; }
+
+.folio .tile:nth-child(3)  { grid-column: 2 / 7;  grid-row: 3; margin-top: clamp(5rem, 12vh, 9rem); }
+.folio .tile:nth-child(3) img { aspect-ratio: 3 / 2; }
+
+.folio .tile:nth-child(4)  { grid-column: 8 / 12; grid-row: 3; margin-top: clamp(11rem, 28vh, 19rem); }
+.folio .tile:nth-child(4) img { aspect-ratio: 4 / 5; }
+
+.folio .tile:nth-child(5)  { grid-column: 1 / 5;  grid-row: 4; margin-top: -4rem; }
+.folio .tile:nth-child(5) img { aspect-ratio: 1 / 1; }
+
+.folio .tile:nth-child(6)  { grid-column: 6 / 13; grid-row: 4; margin-top: 9rem; }
+.folio .tile:nth-child(6) img { aspect-ratio: 16 / 10; }
+
+.folio .tile:nth-child(7)  { grid-column: 3 / 8;  grid-row: 5; margin-top: -7rem; }
+.folio .tile:nth-child(7) img { aspect-ratio: 4 / 3; }
+
+.folio .tile:nth-child(8)  { grid-column: 9 / 13; grid-row: 5; margin-top: 5rem; }
+.folio .tile:nth-child(8) img { aspect-ratio: 3 / 4; }
+
+.folio .tile:nth-child(9)  { grid-column: 1 / 6;  grid-row: 6; margin-top: 7rem; }
+.folio .tile:nth-child(9) img { aspect-ratio: 3 / 2; }
+
+.folio .tile:nth-child(10) { grid-column: 7 / 11; grid-row: 6; margin-top: -9rem; }
+.folio .tile:nth-child(10) img { aspect-ratio: 1 / 1; }
+
+.folio .tile:nth-child(11) { grid-column: 2 / 9;  grid-row: 7; margin-top: 8rem; }
+.folio .tile:nth-child(11) img { aspect-ratio: 16 / 9; }
+
+.folio .tile:nth-child(12) { grid-column: 10 / 13; grid-row: 7; margin-top: -5rem; }
+.folio .tile:nth-child(12) img { aspect-ratio: 3 / 4; }
+
+.folio .tile:nth-child(13) { grid-column: 1 / 5;  grid-row: 8; margin-top: 7rem; }
+.folio .tile:nth-child(13) img { aspect-ratio: 4 / 5; }
+
+.folio .tile:nth-child(14) { grid-column: 6 / 11; grid-row: 8; margin-top: 13rem; }
+.folio .tile:nth-child(14) img { aspect-ratio: 3 / 2; }
+
+/* ─── divider ─────────────────────────────────────────────────────────────── */
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 7.5rem;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--hair-gold);
+}
+.divider span {
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ─── contents — the collections as a book's TOC ──────────────────────────── */
+
+.contents-sec {
+  background: var(--ink-2);
+  padding: 7rem var(--px) 7.5rem;
+  border-top: 1px solid var(--hair-paper);
+}
+
+.sec-head { margin-bottom: 3.6rem; }
+
+.sec-title {
+  margin-top: 1.1rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 520;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(2.5rem, 6.5vw, 6rem);
+  line-height: .95;
+  letter-spacing: -.015em;
+  color: var(--paper);
+}
+
+.sec-meta {
+  margin-top: 1.2rem;
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+
+/* rows — server markup: <a class="collection-card"><img class="collection-cover"><span class="collection-caption">01 — NAME · COUNT</span></a> */
+
+.toc { border-bottom: 1px solid var(--hair-gold); }
+
+.collection-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(180px, 26vw, 340px);
+  gap: clamp(1.2rem, 3vw, 3rem);
+  align-items: center;
+  padding-block: clamp(1.4rem, 3.2vh, 2.4rem);
+  border-top: 1px solid var(--hair-gold);
+  text-decoration: none;
+  color: var(--paper);
+}
+
+.collection-caption {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  font-family: var(--serif);
+  font-weight: 470;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(1.15rem, 2.4vw, 2.35rem);
+  line-height: 1.08;
+  letter-spacing: .012em;
+  transition: transform .5s var(--ease);
+}
+
+.collection-cover {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  height: auto;              /* beats the height="…" attribute so the        */
+  aspect-ratio: 21 / 10;     /* letterbox ratio actually applies             */
+  object-fit: cover;
+  transition: transform .55s var(--ease), filter .55s var(--ease);
+}
+
+/* every other row mirrors — the spread rhythm of a book */
+.toc .collection-card:nth-child(even) { grid-template-columns: clamp(180px, 26vw, 340px) minmax(0, 1fr); }
+.toc .collection-card:nth-child(even) .collection-caption { grid-column: 2; }
+.toc .collection-card:nth-child(even) .collection-cover   { grid-column: 1; }
+
+.collection-card:hover .collection-cover { transform: scale(1.02); filter: brightness(1.08); }
+.collection-card:hover .collection-caption { transform: translateX(.4ch); color: var(--gold); }
+.toc .collection-card:nth-child(even):hover .collection-caption { transform: translateX(-.4ch); }
+
+/* ─── back-cover CTA ──────────────────────────────────────────────────────── */
+
+.cta-sec {
+  background: var(--ink);
+  padding: 8.5rem var(--px) 9rem;
+  border-top: 1px solid var(--hair-paper);
+}
+
+.cta {
+  display: inline-block;
+  margin-top: 1.4rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 540;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(2.7rem, 8.5vw, 8rem);
+  line-height: 1;
+  letter-spacing: -.018em;
+  color: var(--gold);
+  text-decoration: none;
+}
+.cta:hover { color: var(--paper); }
+.cta-arrow { display: inline-block; transition: transform .45s var(--ease); }
+.cta:hover .cta-arrow { transform: translateX(.16em); }
+
+/* ─── colophon — paper again: bio, correspondence, imprint ────────────────── */
+
+.colophon {
+  background: var(--paper);
+  color: var(--ink);
+  padding: 6rem var(--px) 2.2rem;
+}
+
+.colophon-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.7fr 1fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.colophon-mark {
+  margin-top: 1.6rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 620;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(3.4rem, 5.5vw, 5.5rem);
+  line-height: 1;
+  color: var(--gold-ink);
+}
+
+.colophon-bio p {
+  max-width: 62ch;
+  font-family: var(--mono);
+  font-size: .74rem;
+  letter-spacing: .06em;
+  line-height: 1.9;
+  color: var(--ink-soft);
+}
+.colophon-bio p + p { margin-top: 1em; }
+.colophon-bio a { color: var(--ink); text-underline-offset: 3px; }
+
+.write {
+  display: inline-block;
+  margin-top: 1.3rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 520;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  line-height: 1.15;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--gold-ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 7px;
+}
+.write:hover { text-decoration-thickness: 2px; color: var(--gold-ink); }
+
+.email-line {
+  margin-top: .9rem;
+  font-family: var(--mono);
+  font-size: .66rem;
+  letter-spacing: .12em;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.kicker-gap { margin-top: 2.6rem; }
+
+.index-link {
+  display: inline-block;
+  margin-top: 1rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 520;
+  font-size: 1.3rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.index-link:hover { color: var(--gold-ink); }
+
+.colophon-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hair-ink);
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* ─── reveals (JS adds .is-in; no-JS shows everything) ────────────────────── */
+
+.js .tile,
+.js .collection-card,
+.js .rev {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .85s var(--ease), transform .85s var(--ease);
+}
+.js .rev { transform: translateY(14px); }
+
+.js .tile.is-in,
+.js .collection-card.is-in,
+.js .rev.is-in { opacity: 1; transform: none; }
+
+/* ─── responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  .spine { display: none; }
+
+  .cover-meta { grid-column: 9 / 13; }
+  .folio .tile:nth-child(1) { grid-column: 1 / 8; }
+  .folio .tile:nth-child(2) { grid-column: 9 / 13; }
+}
+
+@media (max-width: 700px) {
+  .masthead { padding-top: 4.2rem; }
+  .topbar-mid { display: none; }
+  .masthead-name { font-size: clamp(3rem, 14.6vw, 5.2rem); }
+
+  .masthead-foot { align-items: flex-start; gap: .9rem; }
+  .masthead-kicker, .dek { width: 100%; text-align: left; }
+
+  .field { padding-bottom: 5rem; }
+  .cover-grid { column-gap: 0; }
+
+  /* the annual becomes a single staggered column — order and captions kept */
+  .cover-meta {
+    grid-column: 1 / 13;
+    grid-row: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 2.4rem;
+    padding-top: 2.4rem;
+    margin-bottom: 2.6rem;
+  }
+  .cover-meta .kicker { width: 100%; }
+  .meta-rule, .meta-note { display: none; }
+  .meta-num { margin-top: 1.1rem; }
+  .meta-num .num { font-size: 2.5rem; }
+
+  .folio .tile:nth-child(n)  { grid-row: auto; margin: 0 0 3rem; }
+  .folio .tile:nth-child(odd)  { grid-column: 1 / 12; }
+  .folio .tile:nth-child(even) { grid-column: 2 / 13; }
+  .folio .tile:nth-child(1)  { grid-column: 1 / 13; margin-top: -2.6rem; }
+
+  .divider { margin-top: 3.5rem; }
+
+  .contents-sec { padding-block: 5rem 5.5rem; }
+
+  .toc .collection-card:nth-child(n) {
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: 1.6rem;
+  }
+  .toc .collection-card:nth-child(n) .collection-caption { grid-column: 1; grid-row: 1; }
+  .toc .collection-card:nth-child(n) .collection-cover   { grid-column: 1; grid-row: 2; margin-top: 1rem; aspect-ratio: 16 / 9; }
+  .toc .collection-card:nth-child(even):hover .collection-caption { transform: translateX(.4ch); }
+
+  .cta-sec { padding-block: 6rem 6.5rem; }
+
+  .colophon { padding-top: 4.5rem; }
+  .colophon-grid { grid-template-columns: 1fr; gap: 2.6rem; }
+  .colophon-mark { margin-top: .9rem; }
+
+  .colophon-foot {
+    flex-direction: column;
+    gap: .55rem;
+    margin-top: 3.4rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .masthead-name { letter-spacing: -.03em; }
+  .topbar { letter-spacing: .22em; }
+  .nav-links { gap: .9rem; font-size: .56rem; letter-spacing: .18em; }
+}
+
+/* ─── reduced motion ──────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .js .tile,
+  .js .collection-card,
+  .js .rev,
+  .js .masthead-name .ch { opacity: 1 !important; transform: none !important; }
+}

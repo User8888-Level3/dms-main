@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$collection_name — HARV BALU</title>
+<meta name="description" content="$collection_name — $count photographs by Harv Balu, observed $epoch_range.">
+<meta name="theme-color" content="#050505">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23050505'/><circle cx='32' cy='32' r='20' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-dasharray='2 5' opacity='.85'/><circle cx='32' cy='12' r='5' fill='%23F2EDE0'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Italiana&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body class="inner">
+
+  <a class="skip" href="#field">Skip to photographs</a>
+
+  <div class="stars" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="$site_name — home"><span class="brand-h">H</span><span class="brand-dot">·</span><span class="brand-b">B</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="/work">Work</a>
+      <a href="/#about">About</a>
+    </nav>
+  </header>
+
+  <main class="page page--chart">
+
+    <header class="obs-head">
+      <p class="chart-return"><a href="/work"><svg class="ret-arrow" viewBox="0 0 24 12" aria-hidden="true"><path d="M7 1 1.5 6 7 11M2 6h21" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>The Meridian</a></p>
+      <h1 class="obs-title">$collection_name</h1>
+      <p class="obs-data">Chart $chart_no · <span class="au">$count</span> frames · <span class="au">$epoch_range</span></p>
+    </header>
+
+    <div id="field" class="masonry">
+$photo_tiles
+    </div>
+
+  </main>
+
+  <footer class="colophon">
+    <p class="signoff">The photographs are the only light.</p>
+    <p class="legal">© <span data-year>$year</span> $site_name — Bay Area, California</p>
+    <p class="coords" aria-hidden="true">37.5° N · 122.0° W</p>
+  </footer>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

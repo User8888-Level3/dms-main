@@ -18,3 +18,12 @@ site/assets/search-*.json
 site/assets/search-manifest.json
 site/duplicates.html
 # keep site/index.html, site/assets/style.css, site/assets/search.js, and hand-written templates
+portfolio/data/
+
+# Google Drive conflict copies of the Finder junk file (".DS_Store 2", " 3", ...)
+.DS_Store*
+# broken symlink into an unmounted volume — Drive strips the target anyway
+site/thumbs
+# client/event galleries: photographs of other people stay out of git,
+# same rule as the portfolio (originals live on the NAS, never in a repo)
+Photo-Gallery-*/photos/

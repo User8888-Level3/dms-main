@@ -1,0 +1,31 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "photo-archive",
+      "runtimeExecutable": "/Users/harvinderbalu1/Library/CloudStorage/GoogleDrive-harvinder.balu@gmail.com/My Drive/ClaudeCode/Photography/.venv/bin/python",
+      "runtimeArgs": ["/Users/harvinderbalu1/Library/CloudStorage/GoogleDrive-harvinder.balu@gmail.com/My Drive/ClaudeCode/Photography/photo_server.py"],
+      "port": 8765
+    },
+    {
+      "name": "grad-gallery",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8899", "--directory", "Photo-Gallery-2026-06-06"],
+      "port": 8899
+    },
+    {
+      "name": "portfolio",
+      "runtimeExecutable": "/Users/harvinderbalu1/Library/CloudStorage/GoogleDrive-harvinder.balu@gmail.com/My Drive/ClaudeCode/Photography/portfolio/run_server.sh",
+      "runtimeArgs": [],
+      "port": 8770
+    },
+    {
+      "name": "portfolio-static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8771", "--bind", "127.0.0.1",
+                      "--directory",
+                      "/Users/harvinderbalu1/Library/CloudStorage/GoogleDrive-harvinder.balu@gmail.com/My Drive/ClaudeCode/Photography/portfolio/dist"],
+      "port": 8771
+    }
+  ]
+}

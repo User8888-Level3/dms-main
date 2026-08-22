@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HARV BALU — Photography</title>
+<meta name="description" content="Photographs by Harv Balu — landscapes, wildlife, cosmology, travel and AI artwork. Bay Area, California.">
+<meta name="theme-color" content="#F2EFE9">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23F2EFE9'/><text x='32' y='46' font-size='42' text-anchor='middle' fill='%230B0B0A' font-family='monospace'>+</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Geist+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body class="home">
+
+  <button class="plus" type="button" data-about-toggle aria-expanded="false" aria-controls="about" aria-label="About Harv Balu">+</button>
+
+  <nav class="site-nav" aria-label="Site">
+    <a href="/work">Work</a>
+    <a href="#about" data-about-open>About</a>
+  </nav>
+
+  <main>
+    <section class="landing" aria-label="Selected photographs">
+      <div class="collage" aria-hidden="true">
+$collage_tiles
+      </div>
+      <div class="hero-wrap">
+        <h1 class="hero">$hero_name</h1>
+        <p class="hero-sub">Photographs — Bay Area, California</p>
+      </div>
+    </section>
+
+    <section class="intro">
+      <p class="intro-line">Landscapes, wildlife, cosmology, travel and AI artwork — a quiet archive of the places and the light worth keeping.</p>
+      <a class="work-link" href="/work">Work&nbsp;&rarr;</a>
+      <footer class="foot">&copy; $year Harv Balu</footer>
+    </section>
+  </main>
+
+  <a class="corner corner--left" href="mailto:$contact_email">Contact me</a>
+
+  <div class="about" id="about" role="dialog" aria-modal="true" aria-label="About Harv Balu" hidden>
+    <button class="about-close" type="button" data-about-close aria-label="Close">&times;</button>
+    <nav class="about-heads" aria-label="Overlay navigation">
+      <a href="/" data-about-close>Overview</a>
+      <a href="/work">Work</a>
+    </nav>
+    <div class="about-bio">
+$about_html
+    </div>
+  </div>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

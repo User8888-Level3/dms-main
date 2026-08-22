@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Meridian — HARV BALU</title>
+<meta name="description" content="The full archive of Harv Balu's photography — every collection ordered by epoch of observation, $survey_span.">
+<meta name="theme-color" content="#050505">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23050505'/><circle cx='32' cy='32' r='20' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-dasharray='2 5' opacity='.85'/><circle cx='32' cy='12' r='5' fill='%23F2EDE0'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Italiana&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body class="inner">
+<!--
+THESIS: the archive is a meridian survey — twenty years of observation on one
+drawn line; refuses the category default of a same-size collection card grid.
+OWN-WORLD: Observatory — #050505 void, star-white Italiana designations, gold
+#D4AF37 instrument line/ticks/counters, Fragment Mono log lines, starfield.
+STORY: the visitor descends the survey from the newest epoch to first light,
+understands a sustained practice, and enters any chart to view its frames.
+FIRST VIEWPORT: THE INSTRUMENT — a reflex camera assembling out of the dark
+in gold light, slowly turning; primary action = "Look inside" (or scroll),
+which plays the runway and lands on THE MERIDIAN title and station one.
+FORM: meridian timeline — candidate 7 of 7, seed 6f9fe34d.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the
+finish review, the verdict, and DESIGN.md.
+-->
+
+  <a class="skip" href="#meridian">Skip to collections</a>
+
+  <div class="stars" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="$site_name — home"><span class="brand-h">H</span><span class="brand-dot">·</span><span class="brand-b">B</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="/work" aria-current="page">Work</a>
+      <a href="/#about">About</a>
+    </nav>
+  </header>
+
+  <main class="page page--meridian">
+
+    <!-- ── THE INSTRUMENT — the overture: a reflex camera drawn in its own light.
+         Pinned for the runway; scroll (or "Look inside") assembles it, turns
+         it, takes it apart, closes it, and carries the visitor down the
+         optical axis to the sensor, where the photograph is recorded. ── -->
+    <section class="instrument" aria-label="The instrument — a camera, opened">
+      <div class="instrument-stage">
+        <canvas class="instrument-canvas" aria-hidden="true"></canvas>
+        <div class="instrument-labels" aria-hidden="true"></div>
+        <figure class="instrument-photo" aria-hidden="true">
+          <img src="$instrument_photo" alt="" decoding="async">
+        </figure>
+        <p class="instrument-head" aria-hidden="true"><span class="instrument-title">The Instrument</span><span class="instrument-sub">Canon EOS · drawn in its own light</span></p>
+        <p class="instrument-log" aria-hidden="true"><span data-instrument-log>Assembled</span></p>
+        <p class="instrument-epoch" aria-hidden="true">Observation · <span class="au">$instrument_epoch</span></p>
+        <button type="button" class="instrument-cue" tabindex="-1"><span class="cue-line" aria-hidden="true"></span><span class="cue-word">Look inside</span></button>
+        <p class="instrument-hint" aria-hidden="true">Drag to turn · Scroll to enter</p>
+      </div>
+    </section>
+
+    <header class="obs-head">
+      <h1 class="obs-title">The&nbsp;Meridian</h1>
+      <p class="obs-data">The archive in order of observation · <span class="au">$survey_span</span></p>
+      <p class="obs-data obs-data--dim"><span class="au">$photo_total</span> frames · <span class="au">$collection_count</span> collections</p>
+    </header>
+
+    <ol id="meridian" class="meridian">
+      <span class="meridian-line" aria-hidden="true"><span class="meridian-ink"></span></span>
+$meridian_stations
+      <li class="terminus" aria-hidden="true"><svg class="terminus-mark" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M6.5 6.5l11 11M17.5 6.5l-11 11" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span class="terminus-word">First light</span></li>
+    </ol>
+
+  </main>
+
+  <footer class="colophon">
+    <p class="signoff">The photographs are the only light.</p>
+    <p class="legal">© <span data-year>$year</span> $site_name — Bay Area, California</p>
+    <p class="coords" aria-hidden="true">37.5° N · 122.0° W</p>
+  </footer>
+
+  <script src="/static/app.js" defer></script>
+  <script src="/static/instrument.js" defer></script>
+</body>
+</html>

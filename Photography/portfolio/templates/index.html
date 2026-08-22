@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HARV BALU — Photographs of Night &amp; Light · Bay Area</title>
+<meta name="description" content="The night archive of Bay Area photographer Harv Balu — moons and eclipses, deep-sea light, golden-hour water and luminous artwork, catalogued as plates in a private observatory.">
+<meta name="theme-color" content="#050505">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23050505'/><circle cx='32' cy='32' r='20' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-dasharray='2 5' opacity='.85'/><circle cx='32' cy='12' r='5' fill='%23F2EDE0'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&family=Italiana&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/landing.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+  <a class="skip" href="#plates">Skip to photographs</a>
+
+  <div class="stars" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="$site_name — home"><span class="brand-h">H</span><span class="brand-dot">·</span><span class="brand-b">B</span></a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="/work">Work</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ── The dark before the light: the void, a pool of black water ── -->
+    <section class="hero" aria-label="Introduction">
+      <canvas class="void-water" aria-hidden="true"></canvas>
+      <div class="orbit" aria-hidden="true">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="98.4" stroke="#D4AF37" stroke-opacity=".3" stroke-width=".45" stroke-dasharray="1.2 5.4"/>
+          <circle cx="100" cy="1.6" r="1.7" fill="#EED688"/>
+        </svg>
+      </div>
+      <div class="helm">
+        <h1 class="name">$hero_name</h1>
+        <a class="cue" href="#plates"><span class="cue-line" aria-hidden="true"></span><span class="cue-word">Descend</span></a>
+      </div>
+    </section>
+
+    <!-- ── I · The Plates — the descent through recent work ──────────── -->
+    <section id="plates" class="survey" aria-label="Recent photographs">
+      <header class="sect reveal">
+        <span class="sect-no" aria-hidden="true">I</span>
+        <h2 class="sect-title">The Plates</h2>
+        <p class="sect-sub">Recent observations — newest first</p>
+      </header>
+      <div class="plates">
+$collage_tiles
+      </div>
+    </section>
+
+    <!-- ── II · The Atlas — collections ──────────────────────────────── -->
+    <section id="atlas" class="atlas-wrap" aria-label="Collections">
+      <header class="sect reveal">
+        <span class="sect-no" aria-hidden="true">II</span>
+        <h2 class="sect-title">The Atlas</h2>
+        <p class="sect-sub">$collection_count collections · $photo_total photographs</p>
+      </header>
+      <div class="atlas">
+$collection_cards
+      </div>
+      <p class="all reveal"><a href="/work">Enter the full archive<span class="arr" aria-hidden="true"> →</span></a></p>
+    </section>
+
+    <!-- ── III · Field Notes — about ─────────────────────────────────── -->
+    <section id="about" class="notes" aria-label="About Harv Balu">
+      <header class="sect reveal">
+        <span class="sect-no" aria-hidden="true">III</span>
+        <h2 class="sect-title">Field Notes</h2>
+        <p class="sect-sub">The photographer, in brief</p>
+      </header>
+      <div class="seal reveal" aria-hidden="true"><span class="seal-rule"></span>H·B<span class="seal-rule"></span></div>
+      <div class="bio reveal">
+$about_html
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="colophon">
+    <p class="signoff">The photographs are the only light.</p>
+    <p class="legal">© $year $site_name — Bay Area, California</p>
+    <p class="coords" aria-hidden="true">37.5° N · 122.0° W</p>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+  var mmReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var mmFine = window.matchMedia('(pointer: fine)');
+  var all = function (sel) { return [].slice.call(document.querySelectorAll(sel)); };
+  var targets = all('.tile, .collection-card, .reveal');
+
+  function siblingIndex(el) {
+    var i = 0, n = el;
+    while ((n = n.previousElementSibling)) { i += 1; }
+    return i;
+  }
+
+  /* Staggered ignition: plates ignite as they enter the sky on descent;
+     atlas cards ripple lit in reading order. */
+  function igniteDelay(el) {
+    if (mmReduce.matches) { return 0; }
+    if (el.classList.contains('collection-card')) {
+      return Math.min(siblingIndex(el) * 110, 440);
+    }
+    return 0;
+  }
+
+  if (mmReduce.matches || !('IntersectionObserver' in window)) {
+    targets.forEach(function (el) { el.classList.add('is-lit'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        var el = entry.target;
+        io.unobserve(el);
+        var wait = igniteDelay(el);
+        if (wait > 0) {
+          setTimeout(function () { el.classList.add('is-lit'); }, wait);
+        } else {
+          el.classList.add('is-lit');
+        }
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.12 });
+    targets.forEach(function (el) { io.observe(el); });
+  }
+
+  /* Parallax drift — bodies float at their served data-speed depths.
+     Desktop fine pointers only; transform-only writes, rAF-throttled;
+     base positions cached so getBoundingClientRect never feeds back. */
+  if (mmReduce.matches || !mmFine.matches) { return; }
+  var tiles = all('.plates .tile').map(function (el) {
+    var speed = parseFloat(el.getAttribute('data-speed'));
+    if (!isFinite(speed)) { speed = 0.18; }
+    return { el: el, speed: speed, base: 0, half: 0 };
+  });
+  if (tiles.length === 0) { return; }
+  var ticking = false;
+  var resizeTimer = 0;
+
+  function measure() {
+    var sy = window.pageYOffset;
+    tiles.forEach(function (t) {
+      t.el.style.transform = 'none';
+      var r = t.el.getBoundingClientRect();
+      t.base = r.top + sy;
+      t.half = r.height / 2;
+    });
+  }
+
+  function drift() {
+    ticking = false;
+    var sy = window.pageYOffset;
+    var mid = window.innerHeight / 2;
+    tiles.forEach(function (t) {
+      var delta = (t.base + t.half - sy) - mid;
+      var off = delta * t.speed * -0.14;
+      if (off > 60) { off = 60; } else if (off < -60) { off = -60; }
+      t.el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
+    });
+  }
+
+  function queue() {
+    if (!ticking) { ticking = true; window.requestAnimationFrame(drift); }
+  }
+
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () { measure(); queue(); }, 180);
+  });
+  window.addEventListener('load', function () { measure(); queue(); });
+  measure();
+  queue();
+})();
+</script>
+
+<script>
+/* THE VOID — the hero floor is a shallow pool of black water. The name
+   stands on the waterline and reflects in it; ripples cross the pool on
+   touch and on their own; three small bodies orbit the name. The canvas
+   is decoration (aria-hidden), sits under the type, and renders a single
+   still frame under prefers-reduced-motion. */
+(function () {
+  'use strict';
+  var canvas = document.querySelector('.void-water');
+  var hero = document.querySelector('.hero');
+  var nameEl = document.querySelector('.helm .name');
+  var cueEl = document.querySelector('.helm .cue');
+  if (!canvas || !hero || !nameEl) { return; }
+  var ctx = canvas.getContext('2d');
+  if (!ctx) { return; }
+  var mmReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  var TAU = Math.PI * 2;
+  var W = 0, H = 0, dpr = 0;
+  var horizonY = 0, waterH = 1, nameCX = 0, nameCY = 0, nameW = 0, namePx = 60;
+  var reflH = 0;
+
+  /* The reflection samples an offscreen render of the name. */
+  var txt = document.createElement('canvas');
+  var txtCtx = txt.getContext('2d');
+  var txtBase = 0;
+  /* Captured before any assignment: Safari 17 and earlier ignore
+     ctx.filter, and assigning it first would fool a later check. */
+  var hasCtxFilter = 'filter' in txtCtx;
+
+  function drawText() {
+    var pad = Math.ceil(namePx * 0.6);
+    var nm = (nameEl.textContent || '').toUpperCase();
+    var font = '400 ' + namePx + 'px Italiana, Didot, "Bodoni MT", serif';
+    var track = (namePx * 0.045).toFixed(2) + 'px';
+    /* Measure with the canvas itself so no name is ever clipped; the DOM
+       rect lies when the h1 wraps. Setting width resets context state,
+       so the font is applied twice. */
+    txtCtx.font = font;
+    if ('letterSpacing' in txtCtx) { txtCtx.letterSpacing = track; }
+    var measured = txtCtx.measureText(nm).width;
+    var w = Math.max(2, Math.ceil(measured + pad * 2));
+    var h = Math.max(2, Math.ceil(namePx * 1.3));
+    txt.width = w;
+    txt.height = h;
+    txtBase = Math.round(namePx * 1.02);
+    txtCtx.setTransform(1, 0, 0, 1, 0, 0);
+    txtCtx.clearRect(0, 0, w, h);
+    txtCtx.font = font;
+    if ('letterSpacing' in txtCtx) { txtCtx.letterSpacing = track; }
+    txtCtx.textAlign = 'center';
+    txtCtx.textBaseline = 'alphabetic';
+    txtCtx.fillStyle = '#f2ede0';
+    var blurPx = Math.max(1, namePx * 0.014);
+    if (hasCtxFilter) {
+      txtCtx.filter = 'blur(' + blurPx.toFixed(1) + 'px)';
+      txtCtx.fillText(nm, w / 2, txtBase);
+      txtCtx.filter = 'none';
+    } else {
+      /* Approximate the softness with five low-alpha offset passes. */
+      txtCtx.globalAlpha = 0.3;
+      var offs = [[0, 0], [blurPx, 0], [-blurPx, 0], [0, blurPx * 0.7], [0, -blurPx * 0.7]];
+      for (var j = 0; j < offs.length; j++) {
+        txtCtx.fillText(nm, w / 2 + offs[j][0], txtBase + offs[j][1]);
+      }
+      txtCtx.globalAlpha = 1;
+    }
+  }
+
+  function measure() {
+    var r = hero.getBoundingClientRect();
+    var w = Math.max(1, Math.round(r.width));
+    var h = Math.max(1, Math.round(r.height));
+    var d = Math.min(window.devicePixelRatio || 1, 2);
+    if (w !== W || h !== H || d !== dpr) {
+      W = w; H = h; dpr = d;
+      canvas.width = Math.round(w * d);
+      canvas.height = Math.round(h * d);
+      ctx.setTransform(d, 0, 0, d, 0, 0);
+    }
+    var n = nameEl.getBoundingClientRect();
+    nameCX = n.left - r.left + n.width / 2;
+    nameCY = n.top - r.top + n.height / 2;
+    nameW = n.width;
+    namePx = parseFloat(window.getComputedStyle(nameEl).fontSize) || 60;
+    /* The waterline sits at the name's baseline: the name stands ON the pool. */
+    horizonY = n.bottom - r.top - namePx * 0.10;
+    waterH = Math.max(1, H - horizonY);
+    /* On short viewports the reflection compresses rather than run
+       under the cue; offsetTop, so the cue's rise cannot skew it. */
+    reflH = Math.min(namePx * 0.92,
+      Math.max(namePx * 0.3, (cueEl ? cueEl.offsetTop : H) - 8 - horizonY));
+    drawText();
+  }
+
+  /* Ripples: expanding perspective ellipses, fainter as they age.
+     Eviction spares long-lived groundswells so a full pool of pointer
+     ripples cannot delete one mid-fade in a single frame. */
+  var ripples = [];
+  function evictRipple() {
+    for (var e = 0; e < ripples.length; e++) {
+      if (!ripples[e].soft) { ripples.splice(e, 1); return; }
+    }
+    ripples.shift();
+  }
+  function ripple(x, y, big) {
+    if (ripples.length > 22) { evictRipple(); }
+    ripples.push({ x: x, y: y, r: big ? 6 : 3, v: big ? 46 : 30, life: big ? 3 : 2.2, age: 0 });
+  }
+
+  /* The wind and the mirrored sky. Streaks are glint brushed across the
+     surface; sparks are starlight caught in the pool. Both live in
+     normalized coordinates so a resize only rescales them, and both are
+     pure functions of t so the reduced-motion still inherits them. */
+  var STREAKS = [];
+  for (var sn = 0; sn < 9; sn++) {
+    STREAKS.push({
+      u: 0.08 + Math.random() * 0.84,
+      x: Math.random(),
+      len: 0.05 + Math.random() * 0.10,
+      drift: (Math.random() < 0.5 ? -1 : 1) * (0.004 + Math.random() * 0.009),
+      period: 5 + Math.random() * 7,
+      ph: Math.random() * TAU
+    });
+  }
+  var SPARKS = [];
+  for (var pn = 0; pn < 26; pn++) {
+    SPARKS.push({
+      x: Math.random(),
+      u: 0.05 + Math.random() * 0.9,
+      period: 2.2 + Math.random() * 4.5,
+      ph: Math.random() * TAU,
+      size: 0.5 + Math.random() * 0.9
+    });
+  }
+  function squashAt(y) {
+    return 0.16 + 0.15 * Math.min(1, Math.max(0, (y - horizonY) / waterH));
+  }
+
+  var lastMove = 0;
+  hero.addEventListener('pointermove', function (e) {
+    if (mmReduce.matches) { return; }
+    var now = performance.now();
+    if (now - lastMove < 120) { return; }
+    var r = hero.getBoundingClientRect();
+    var y = e.clientY - r.top;
+    if (y > horizonY - 4) {
+      lastMove = now;
+      ripple(e.clientX - r.left, Math.max(y, horizonY + 6), false);
+    }
+  }, { passive: true });
+  hero.addEventListener('pointerdown', function (e) {
+    if (mmReduce.matches) { return; }
+    var r = hero.getBoundingClientRect();
+    var y = e.clientY - r.top;
+    if (y > horizonY - 4) {
+      ripple(e.clientX - r.left, Math.max(y, horizonY + 6), true);
+    }
+  }, { passive: true });
+
+  /* Three bodies orbiting the name, gold and starlight only. */
+  var BODIES = [
+    { a: 0.335, b: 0.085, period: 21, ph: 2.2, size: 2.6, tone: '238,214,136' },
+    { a: 0.45,  b: 0.125, period: 34, ph: 5.1, size: 1.9, tone: '242,237,224' },
+    { a: 0.565, b: 0.16,  period: 52, ph: 0.7, size: 3.1, tone: '212,175,55' }
+  ];
+
+  function drawBody(x, y, size, tone, alpha) {
+    var g = ctx.createRadialGradient(x, y, 0, x, y, size * 5);
+    g.addColorStop(0, 'rgba(' + tone + ',' + (0.5 * alpha).toFixed(3) + ')');
+    g.addColorStop(1, 'rgba(' + tone + ',0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, size * 5, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(' + tone + ',' + (0.92 * alpha).toFixed(3) + ')';
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, TAU);
+    ctx.fill();
+  }
+
+  var ambient = 1.2;
+  var swell = 4;
+
+  function render(t, dt) {
+    ctx.clearRect(0, 0, W, H);
+
+    /* The pool: near-black, a breath lighter at the waterline. */
+    var wg = ctx.createLinearGradient(0, horizonY, 0, H);
+    wg.addColorStop(0, '#0b0a08');
+    wg.addColorStop(0.22, '#070606');
+    wg.addColorStop(1, '#050505');
+    ctx.fillStyle = wg;
+    ctx.fillRect(0, horizonY, W, waterH);
+
+    /* The name's halo pooling on the water surface. */
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, horizonY, W, waterH);
+    ctx.clip();
+    ctx.translate(nameCX, horizonY);
+    ctx.scale(1, 0.32);
+    var glow = ctx.createRadialGradient(0, 0, 0, 0, 0, nameW * 0.72);
+    var breath = 0.045 + 0.018 * Math.sin(t * TAU / 8.5);
+    glow.addColorStop(0, 'rgba(212,175,55,' + breath.toFixed(3) + ')');
+    glow.addColorStop(1, 'rgba(212,175,55,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, 0, nameW * 0.72, 0, TAU);
+    ctx.fill();
+    ctx.restore();
+
+    /* Wind brushing the surface: bowed glints that drift and breathe. */
+    for (var si = 0; si < STREAKS.length; si++) {
+      var st = STREAKS[si];
+      var stBreath = 0.5 + 0.5 * Math.sin((t / st.period) * TAU + st.ph);
+      var stA = 0.055 * stBreath;
+      if (stA < 0.006) { continue; }
+      var stL = st.len * W * (0.5 + st.u);
+      var stX = (((st.x + t * st.drift) % 1) + 1) % 1 * (W + stL) - stL;
+      var stY = horizonY + st.u * waterH + Math.sin(t * 0.6 + st.ph) * (1 + st.u * 2);
+      var stG = ctx.createLinearGradient(stX, 0, stX + stL, 0);
+      stG.addColorStop(0, 'rgba(238,214,136,0)');
+      stG.addColorStop(0.5, 'rgba(238,214,136,' + stA.toFixed(3) + ')');
+      stG.addColorStop(1, 'rgba(238,214,136,0)');
+      ctx.strokeStyle = stG;
+      ctx.lineWidth = 1 + st.u;
+      ctx.beginPath();
+      ctx.moveTo(stX, stY);
+      ctx.quadraticCurveTo(stX + stL / 2,
+        stY + Math.sin(t * 0.8 + st.ph * 2) * (1.5 + st.u * 2.5), stX + stL, stY);
+      ctx.stroke();
+    }
+
+    /* The starfield caught in the pool, adrift on a slow current. */
+    for (var pi = 0; pi < SPARKS.length; pi++) {
+      var sp = SPARKS[pi];
+      var tw = Math.sin((t / sp.period) * TAU + sp.ph);
+      var spA = 0.16 * Math.max(0, tw) * (0.35 + sp.u * 0.65);
+      if (spA < 0.008) { continue; }
+      /* Padded span so a spark drifts off one edge before entering the
+         other, never teleporting across the pool mid-twinkle. */
+      var spX = ((sp.x + t * 0.0022) % 1) * (W + 12) - 6;
+      var spY = horizonY + sp.u * waterH + Math.sin(t * 0.5 + sp.ph) * 1.5;
+      ctx.fillStyle = 'rgba(242,237,224,' + spA.toFixed(3) + ')';
+      ctx.beginPath();
+      ctx.ellipse(spX, spY, sp.size * (1 + sp.u), sp.size * 0.5, 0, 0, TAU);
+      ctx.fill();
+    }
+
+    /* The reflection, sliced, with a wobble that grows with depth. */
+    var slice = 3;
+    var steps = Math.ceil(reflH / slice);
+    var srcScale = txtBase / reflH;
+    for (var i = 0; i < steps; i++) {
+      var depth = i / steps;
+      var sy = txtBase - (i + 1) * slice * srcScale;
+      if (sy < 0) { break; }
+      var base = 0.26 * Math.pow(1 - depth, 1.5);
+      if (base < 0.008) { break; }
+      /* Bands of light climb the reflection while a swell travels it. */
+      var a = base * (0.8 + 0.3 * Math.sin(t * 1.4 - i * 0.45));
+      var wob = Math.sin(t * 1.15 + i * 0.52) * (0.8 + depth * 3.8)
+              + Math.sin(t * 0.53 + i * 0.23) * (0.5 + depth * 2.2)
+              + Math.sin(t * 0.82 - i * 0.31) * (depth * 2.2);
+      ctx.globalAlpha = a;
+      ctx.drawImage(txt,
+        0, sy, txt.width, slice * srcScale,
+        nameCX - txt.width / 2 + wob, horizonY + i * slice, txt.width, slice);
+    }
+    ctx.globalAlpha = 1;
+
+    /* The resting ring where the name touches the pool, breathing. */
+    ctx.strokeStyle = 'rgba(212,175,55,' + (0.08 + 0.04 * Math.sin(t * 0.9)).toFixed(3) + ')';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(nameCX, horizonY + namePx * 0.05,
+      nameW * 0.55 * (1 + 0.012 * Math.sin(t * 0.7 + 1)),
+      namePx * 0.16 * (1 + 0.035 * Math.sin(t * 0.7)), 0, 0, TAU);
+    ctx.stroke();
+
+    /* Ripples. Groundswells ride the same list, wider and fainter. */
+    for (var k = ripples.length - 1; k >= 0; k--) {
+      var p = ripples[k];
+      p.age += dt;
+      if (p.age >= p.life) { ripples.splice(k, 1); continue; }
+      var fade = 1 - p.age / p.life;
+      var r1 = p.r + p.v * p.age;
+      var sq = squashAt(p.y);
+      ctx.strokeStyle = 'rgba(238,214,136,' + ((p.soft ? 0.07 : 0.15) * fade).toFixed(3) + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, r1, r1 * sq, 0, 0, TAU);
+      ctx.stroke();
+      if (p.age > 0.35) {
+        var r2 = p.r + p.v * (p.age - 0.35) * 0.8;
+        ctx.strokeStyle = 'rgba(238,214,136,' + ((p.soft ? 0.04 : 0.09) * fade).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y, r2, r2 * sq, 0, 0, TAU);
+        ctx.stroke();
+      }
+    }
+
+    /* Rain finds the pool on its own now: a drop every second or two,
+       sometimes heavy, anywhere on the water. */
+    ambient -= dt;
+    if (ambient <= 0) {
+      ambient = 1.1 + Math.random() * 1.7;
+      ripple(W * (0.06 + Math.random() * 0.88),
+             horizonY + waterH * (0.08 + Math.random() * 0.62),
+             Math.random() < 0.12);
+    }
+
+    /* And every so often a groundswell crosses the whole pool. */
+    swell -= dt;
+    if (swell <= 0) {
+      swell = 9 + Math.random() * 6;
+      if (ripples.length > 22) { evictRipple(); }
+      ripples.push({ x: nameCX + (Math.random() - 0.5) * W * 0.5,
+                     y: horizonY + waterH * 0.35,
+                     r: 10, v: 26, life: 6, age: 0, soft: true });
+    }
+
+    /* The orbiting bodies, nearer arc brighter, mirrored in the pool. */
+    var m = Math.min(W, H);
+    for (var b = 0; b < BODIES.length; b++) {
+      var o = BODIES[b];
+      var ang = (t / o.period) * TAU + o.ph;
+      var x = nameCX + Math.cos(ang) * o.a * m;
+      var y = nameCY + Math.sin(ang) * o.b * m;
+      var front = Math.sin(ang);
+      var alpha = 0.55 + 0.35 * front;
+      var size = o.size * (1 + 0.22 * front);
+      if (y < horizonY) {
+        /* The body lays a broken, wobbling path of light on the pool. */
+        var gl = Math.min(waterH * 0.55, 90 + m * 0.05);
+        var seg = 7;
+        for (var gi = 0, gn = Math.floor(gl / seg); gi < gn; gi++) {
+          var gy = horizonY + 4 + gi * seg;
+          var gd = gi * seg / gl;
+          var ga = 0.05 * alpha * (1 - gd);
+          if (ga < 0.006) { break; }
+          var gx = x + Math.sin(t * 1.3 + gi * 0.9 + b) * (1 + gd * 5);
+          ctx.strokeStyle = 'rgba(' + o.tone + ',' + ga.toFixed(3) + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(gx - (2 + gd * 4), gy);
+          ctx.lineTo(gx + (2 + gd * 4), gy);
+          ctx.stroke();
+        }
+        var ry = 2 * horizonY - y;
+        if (ry < H + 30) {
+          var wobb = Math.sin(t * 1.7 + b * 2.1) * 1.6;
+          ctx.globalAlpha = 0.2;
+          drawBody(x + wobb, ry, size * 0.9, o.tone, alpha);
+          ctx.globalAlpha = 1;
+        }
+      }
+      drawBody(x, y, size, o.tone, alpha);
+    }
+  }
+
+  /* Pause off screen or in a hidden tab; the two signals are ANDed so
+     neither can resurrect rendering the other has paused. */
+  var onScreen = true, tabShown = !document.hidden, visible = true;
+  function syncVis() { visible = onScreen && tabShown; }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) {
+      onScreen = es.length ? es[es.length - 1].isIntersecting : true;
+      syncVis();
+    }, { threshold: 0 }).observe(hero);
+  }
+  document.addEventListener('visibilitychange', function () {
+    tabShown = !document.hidden;
+    syncVis();
+    last = 0;
+  });
+
+  var last = 0, t = 0, rafOn = false;
+  function tick(now) {
+    /* Checked first so a mid-session reduce flip halts the loop without
+       painting over the still frame the change listener draws. */
+    if (mmReduce.matches) { rafOn = false; return; }
+    requestAnimationFrame(tick);
+    if (!visible) { last = now; return; }
+    var dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
+    last = now;
+    t += dt;
+    render(t, dt);
+  }
+  function startRaf() {
+    if (rafOn) { return; }
+    rafOn = true;
+    last = 0;
+    requestAnimationFrame(tick);
+  }
+
+  function still() {
+    /* One resolved frame: pool, reflection, a mid-life ripple, bodies. */
+    t = 7.3;
+    ripples.length = 0;
+    ripple(nameCX - nameW * 0.33, horizonY + waterH * 0.3, false);
+    ripples[0].age = 0.9;
+    render(t, 0);
+  }
+
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(function () {
+      measure();
+      if (mmReduce.matches) { still(); }
+    }).observe(hero);
+  } else {
+    window.addEventListener('resize', function () {
+      measure();
+      if (mmReduce.matches) { still(); }
+    });
+  }
+
+  /* The name is measured again once the display font arrives and once the
+     resolve animation ends (its from-state scales the rect by 1.05). */
+  if (document.fonts && document.fonts.ready && document.fonts.ready.then) {
+    document.fonts.ready.then(function () {
+      measure();
+      if (mmReduce.matches) { still(); }
+    });
+  }
+  nameEl.addEventListener('animationend', function () {
+    measure();
+    if (mmReduce.matches) { still(); }
+  });
+
+  /* A window dragged to a display with another pixel ratio fires no
+     resize; watch the ratio itself, re-arming per change. */
+  (function watchDpr() {
+    if (typeof window.matchMedia !== 'function') { return; }
+    var mq = window.matchMedia('(resolution: ' + (window.devicePixelRatio || 1) + 'dppx)');
+    if (!mq.addEventListener) { return; }
+    mq.addEventListener('change', function onChange() {
+      mq.removeEventListener('change', onChange);
+      measure();
+      if (mmReduce.matches) { still(); }
+      watchDpr();
+    });
+  })();
+
+  /* React to the preference changing mid-session: reduce flips to one
+     still frame; releasing it restarts the loop. */
+  if (mmReduce.addEventListener) {
+    mmReduce.addEventListener('change', function () {
+      if (mmReduce.matches) { still(); } else { startRaf(); }
+    });
+  }
+
+  measure();
+  if (mmReduce.matches) {
+    still();
+  } else {
+    startRaf();
+  }
+})();
+</script>
+</body>
+</html>

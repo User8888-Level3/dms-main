@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HARV BALU — A Photography Annual</title>
+<meta name="description" content="The photographic annual of Harv Balu — wolf moons and eclipses, jellyfish in deep blue, gold hour over still water, and AI-imagined plates. Bay Area, California.">
+<meta name="theme-color" content="#0E0D0B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230E0D0B'/%3E%3Ctext x='32' y='44' font-size='28' text-anchor='middle' fill='%23D4AF37' font-family='Georgia, serif' font-style='italic'%3EHB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/landing.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="chrome">
+  <nav class="nav" aria-label="Site">
+    <a class="brandmark" href="/" aria-label="$site_name — home">HB.</a>
+    <div class="nav-links">
+      <a href="/work">Index</a>
+      <a href="#colophon">About</a>
+      <a href="mailto:$contact_email">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<aside class="spine" aria-hidden="true"><span>HARV BALU&nbsp;&nbsp;—&nbsp;&nbsp;A PHOTOGRAPHY ANNUAL&nbsp;&nbsp;—&nbsp;&nbsp;VOL. I&nbsp;&nbsp;·&nbsp;&nbsp;$year</span></aside>
+
+<main id="main">
+
+  <!-- ═════ THE COVER — paper masthead band over an ink field of plates ═════ -->
+  <section class="cover" aria-label="Cover and recent plates">
+
+    <div class="masthead">
+      <p class="topbar" role="doc-subtitle">
+        <span>A Photography Annual</span>
+        <span class="topbar-mid">Bay Area, California</span>
+        <span>Vol.&nbsp;I&nbsp;—&nbsp;$year</span>
+      </p>
+      <div class="rule-double" aria-hidden="true"></div>
+      <h1 class="masthead-name" id="masthead-name">$hero_name</h1>
+      <div class="masthead-foot">
+        <p class="masthead-kicker">Edited &amp; sequenced by the author</p>
+        <p class="dek">Wolf moons and eclipses, jellyfish in deep blue, gold hour over still water&nbsp;— and plates from an imagined world.</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="cover-grid">
+
+        <div class="cover-meta rev">
+          <p class="kicker">In this volume</p>
+          <p class="meta-num"><span class="num">$photo_total</span><span class="meta-unit">Photographs</span></p>
+          <p class="meta-num"><span class="num">$collection_count</span><span class="meta-unit">Collections</span></p>
+          <div class="meta-rule" aria-hidden="true"></div>
+          <p class="meta-note">Recent plates, newest first.</p>
+        </div>
+
+        <div class="folio">
+$collage_tiles
+        </div>
+
+      </div>
+
+      <div class="divider rev" aria-hidden="true"><span>End of plates</span></div>
+    </div>
+
+  </section>
+
+  <!-- ═════ CONTENTS — the collections as a table of contents ═════ -->
+  <section class="contents-sec" aria-labelledby="contents-title">
+    <header class="sec-head rev">
+      <p class="kicker">Contents</p>
+      <h2 class="sec-title" id="contents-title">The Collections</h2>
+      <p class="sec-meta">$collection_count collections&nbsp;&nbsp;·&nbsp;&nbsp;$photo_total photographs</p>
+    </header>
+    <div class="toc">
+$collection_cards
+    </div>
+  </section>
+
+  <!-- ═════ BACK-COVER CTA ═════ -->
+  <section class="cta-sec rev" aria-label="Enter the archive">
+    <p class="kicker">The full archive</p>
+    <a class="cta" href="/work">Enter the archive<span class="cta-arrow" aria-hidden="true">&nbsp;&rarr;</span></a>
+  </section>
+
+</main>
+
+<!-- ═════ COLOPHON — about, correspondence, imprint ═════ -->
+<footer class="colophon" id="colophon">
+  <div class="colophon-grid">
+
+    <div class="colophon-brand rev">
+      <p class="kicker kicker-paper">Colophon</p>
+      <p class="colophon-mark" aria-hidden="true">HB.</p>
+    </div>
+
+    <div class="colophon-bio rev">
+$about_html
+    </div>
+
+    <div class="colophon-contact rev">
+      <p class="kicker kicker-paper">Correspondence</p>
+      <a class="write" href="mailto:$contact_email">Write to the studio</a>
+      <p class="email-line">$contact_email</p>
+      <p class="kicker kicker-paper kicker-gap">Index</p>
+      <a class="index-link" href="/work">All works&nbsp;&rarr;</a>
+    </div>
+
+  </div>
+
+  <div class="colophon-foot">
+    <span>&copy;&nbsp;$year&nbsp;$site_name</span>
+    <span class="foot-mid">Vol.&nbsp;I&nbsp;—&nbsp;printed on screen</span>
+    <span>All plates by the author</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var d = document;
+  var root = d.documentElement;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Foil-stamp the masthead: split the name into characters and rise them in. */
+  var h = d.getElementById('masthead-name');
+  if (h && !reduce) {
+    var t = h.textContent;
+    h.setAttribute('aria-label', t);
+    var w = d.createElement('span');
+    w.setAttribute('aria-hidden', 'true');
+    w.className = 'chars';
+    for (var i = 0; i < t.length; i++) {
+      var s = d.createElement('span');
+      s.className = 'ch' + (t.charAt(i) === ' ' ? ' ch-sp' : '');
+      s.style.setProperty('--i', String(i));
+      s.textContent = t.charAt(i);
+      w.appendChild(s);
+    }
+    h.textContent = '';
+    h.appendChild(w);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { root.classList.add('stamped'); });
+    });
+  } else {
+    root.classList.add('stamped');
+  }
+
+  /* Reveal plates, contents rows and blocks as they enter the page. */
+  var els = [].slice.call(d.querySelectorAll('.tile, .collection-card, .rev'));
+  if (reduce || !('IntersectionObserver' in window)) {
+    els.forEach(function (el) { el.classList.add('is-in'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.classList.add('is-in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -7% 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  }
+})();
+</script>
+
+</body>
+</html>

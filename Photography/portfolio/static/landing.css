@@ -1,0 +1,704 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   HARV BALU — "OBSERVATORY" landing
+   A pitch-black night gallery. The photographs are the only light sources —
+   celestial bodies hanging in a void, catalogued as numbered plates.
+   Type: Italiana (hairline high-contrast display) × Fragment Mono (log voice).
+   Gold #D4AF37 echoes the personal monogram; used as instrument markings.
+
+   Contract kept:
+   - no background-attachment anywhere · no backdrop-filter anywhere
+   - transitions/animations touch ONLY transform / opacity / filter
+     (hover color swaps are instant by design — instrument-panel crispness)
+   - prefers-reduced-motion collapses everything to visible/static
+   - mobile-first to 375px · no horizontal scroll · tiles/cards markup
+     is server-owned and only restyled here
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --void: #050505;            /* the sky */
+  --starlight: #F2EDE0;       /* primary text — warm star-white */
+  --dim: #A39C8B;             /* secondary text, AA on void */
+  --dim-2: #8A8375;           /* tertiary microcopy, AA-large on void */
+  --gold: #D4AF37;            /* monogram gold — instrument markings */
+  --gold-bright: #EED688;     /* heated gold — hover states */
+  --gold-dim: rgba(212, 175, 55, .55);
+  --hairline: rgba(212, 175, 55, .22);
+  --font-display: 'Italiana', 'Didot', 'Bodoni MT', serif;
+  --font-mono: 'Fragment Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --ease-out: cubic-bezier(.19, .61, .26, 1);
+  --pad-x: clamp(1.25rem, 6vw, 6rem);
+}
+
+/* ─── base ────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  scrollbar-color: rgba(212, 175, 55, .35) #050505;
+}
+
+body {
+  margin: 0;
+  position: relative;
+  background: var(--void);
+  color: var(--starlight);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+figure { margin: 0; }
+h1, h2, p { margin: 0; }
+
+::selection { background: var(--gold); color: var(--void); }
+
+:focus-visible { outline: 1px solid var(--gold); outline-offset: 5px; }
+
+section[id] { scroll-margin-top: 4.5rem; }
+
+.skip {
+  position: fixed;
+  top: -4rem;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 200;
+  padding: .7rem 1.2rem;
+  background: var(--void);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font: 400 .62rem/1 var(--font-mono);
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.skip:focus-visible { top: 1rem; outline: none; }
+
+/* ─── starfield — a fixed sky the page scrolls past ───────────────────────── */
+/* Pure CSS, two repeating layers; deliberately sparse: the photographs must
+   remain the brightest things in the room. No blur, no bg-attachment. */
+
+.stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  animation: fadein 2.4s ease .15s both;
+}
+
+.stars::before,
+.stars::after {
+  content: "";
+  position: absolute;
+  inset: -60px;
+}
+
+.stars::before {
+  opacity: .32;
+  background-image:
+    radial-gradient(1px 1px at 22px 44px,  rgba(242, 237, 224, .9) 50%, transparent 51%),
+    radial-gradient(1px 1px at 178px 132px, rgba(242, 237, 224, .7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 340px 66px,  rgba(242, 237, 224, .8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 92px 276px,  rgba(242, 237, 224, .6) 50%, transparent 51%),
+    radial-gradient(1px 1px at 448px 214px, rgba(242, 237, 224, .8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 268px 388px, rgba(242, 237, 224, .55) 50%, transparent 51%),
+    radial-gradient(1px 1px at 486px 470px, rgba(242, 237, 224, .7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 44px 522px,  rgba(242, 237, 224, .6) 50%, transparent 51%);
+  background-size: 520px 580px;
+}
+
+.stars::after {
+  opacity: .38;
+  background-image:
+    radial-gradient(1.5px 1.5px at 118px 92px,  rgba(238, 214, 136, .9) 50%, transparent 51%),
+    radial-gradient(1px 1px at 402px 178px,     rgba(242, 237, 224, .75) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 636px 348px, rgba(238, 214, 136, .7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 234px 442px,     rgba(242, 237, 224, .6) 50%, transparent 51%),
+    radial-gradient(1px 1px at 758px 120px,     rgba(242, 237, 224, .8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 524px 604px,     rgba(242, 237, 224, .65) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 82px 660px,  rgba(238, 214, 136, .55) 50%, transparent 51%);
+  background-size: 840px 720px;
+  animation: twinkle 9s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: .2; }
+  to   { opacity: .48; }
+}
+
+/* ─── topbar ──────────────────────────────────────────────────────────────── */
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.05rem clamp(1.1rem, 4vw, 3rem);
+  background: linear-gradient(rgba(5, 5, 5, .92), rgba(5, 5, 5, .5) 60%, rgba(5, 5, 5, 0));
+  animation: fadein 1.2s ease 2.3s both;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: .1em;
+  color: var(--gold);
+  text-decoration: none;
+}
+.brand-dot { color: var(--gold-dim); padding: 0 .1em; }
+.brand:hover { color: var(--gold-bright); }
+
+.site-nav {
+  display: flex;
+  gap: clamp(1.05rem, 3vw, 2.2rem);
+}
+.site-nav a {
+  padding: .55rem .15rem;
+  font: 400 .6rem/1 var(--font-mono);
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--dim);
+}
+.site-nav a:hover {
+  color: var(--gold-bright);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-color: var(--gold-dim);
+}
+
+/* ─── hero — the name resolves out of darkness ────────────────────────────── */
+
+.hero { position: relative; }
+
+/* the void's floor: a shallow pool of black water, painted by script */
+.void-water {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+  animation: fadein 2.4s ease .9s both;
+}
+
+.orbit {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(132vmin, 1250px);
+  aspect-ratio: 1;
+  z-index: 2;
+  pointer-events: none;
+  animation: fadein 2.6s ease 1.2s both, spin 150s linear infinite;
+}
+.orbit svg { width: 100%; height: 100%; display: block; }
+
+.helm {
+  position: relative;
+  z-index: 3;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6rem 1.25rem 4rem;
+  pointer-events: none;
+}
+
+/* the name stands alone in the void — only the orbit keeps it company */
+.name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3.3rem, 12.5vw, 10.8rem);
+  line-height: .98;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  white-space: nowrap;           /* one line, so the pool mirrors it truly */
+  pointer-events: auto;          /* selectable despite the helm's none */
+  color: var(--starlight);
+  text-shadow:
+    0 0 42px rgba(212, 175, 55, .22),
+    0 0 130px rgba(212, 175, 55, .1);
+  animation: resolve 1.7s var(--ease-out) .5s both;
+}
+
+/* The sheen: every ten seconds a band of heated gold passes through the
+   starlight letters, left to right, like light finding the name across
+   water. Paint-only — geometry never moves, so the pool's mirror stays
+   true. Gradient-clipped text only where supported; elsewhere the solid
+   starlight name above stands unchanged. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .name {
+    background-image: linear-gradient(100deg,
+      var(--starlight) 0%,
+      var(--starlight) 38%,
+      #EFE9CF 41%,               /* the trailing afterglow */
+      var(--starlight) 44%,
+      #F1EACB 47.5%,
+      var(--gold-bright) 50%,    /* the beam itself */
+      #F1EACB 52.5%,
+      var(--starlight) 56%,
+      var(--starlight) 100%);
+    background-size: 400% 100%;
+    background-position: 100% 0; /* rest state shows pure starlight */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* text-shadow paints OVER clipped text in WebKit and would wash the
+       gradient gold; the aura moves to drop-shadows, whose list shape
+       matches the resolve keyframe so the entrance stays interpolable. */
+    text-shadow: none;
+    filter: blur(0) brightness(1)
+      drop-shadow(0 0 42px rgba(212, 175, 55, .22))
+      drop-shadow(0 0 90px rgba(212, 175, 55, .1));
+    transition: filter .7s var(--ease-out);
+    animation:
+      resolve 1.7s var(--ease-out) .5s both,
+      name-sheen 10s linear 2.6s infinite;
+  }
+  /* Ignition on approach, like every other body in the observatory. */
+  .name:hover {
+    filter: blur(0) brightness(1.04)
+      drop-shadow(0 0 30px rgba(238, 214, 136, .32))
+      drop-shadow(0 0 90px rgba(212, 175, 55, .16));
+  }
+  /* Selected glyphs go void-on-gold like the rest of the site; without
+     this the transparent fill leaves them gradient over the highlight. */
+  .name::selection {
+    -webkit-text-fill-color: var(--void);
+    color: var(--void);
+  }
+}
+@keyframes name-sheen {
+  from { background-position: 100% 0; }
+  to   { background-position: 0% 0; }
+}
+
+.cue {
+  /* pinned at the pool's far edge so the name meets its reflection alone */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(2.2rem, 5vh, 3.6rem);
+  margin-inline: auto;
+  width: max-content;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .95rem;
+  padding: .4rem .6rem;
+  pointer-events: auto;
+  text-decoration: none;
+  font: 400 .56rem/1 var(--font-mono);
+  letter-spacing: .5em;
+  text-indent: .5em;             /* optically recenter tracked caps */
+  text-transform: uppercase;
+  color: var(--dim);
+  animation: rise 1.1s var(--ease-out) 2.3s both;
+}
+.cue-line {
+  width: 1px;
+  height: 56px;
+  background: linear-gradient(rgba(212, 175, 55, 0), var(--gold));
+  animation: plumb 3s ease-in-out infinite;
+}
+.cue:hover .cue-word { color: var(--gold-bright); }
+
+/* ─── section headers — logbook chapters ──────────────────────────────────── */
+
+main { position: relative; z-index: 1; }
+
+.survey, .atlas-wrap, .notes {
+  padding: clamp(6rem, 15vh, 11rem) var(--pad-x);
+}
+.atlas-wrap, .notes { position: relative; z-index: 1; }
+
+.sect {
+  text-align: center;
+  margin-bottom: clamp(3.4rem, 9vh, 7rem);
+}
+.sect-no {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  line-height: 1;
+  letter-spacing: .35em;
+  text-indent: .35em;
+  color: var(--gold);
+}
+.sect-no::before {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 44px;
+  margin: 0 auto 1.3rem;
+  background: linear-gradient(rgba(212, 175, 55, 0), var(--gold-dim));
+}
+.sect-title {
+  margin-top: 1rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  line-height: 1.05;
+  letter-spacing: .05em;
+  color: var(--starlight);
+}
+.sect-sub {
+  margin-top: 1rem;
+  font: 400 .6rem/1.8 var(--font-mono);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--dim-2);
+}
+
+/* ─── I · the plates — the descent ────────────────────────────────────────── */
+/* Server emits (markup not ours):
+   <figure class="tile tile--N" data-speed="0.xx"><img …></figure>
+   Every tile is a floating plate in a meandering column — the hero holds
+   nothing but the name, and the photographs begin only on descent. */
+
+.survey { padding-left: clamp(1.1rem, 3.5vw, 3rem); padding-right: clamp(1.1rem, 3.5vw, 3rem); }
+
+.plates {
+  display: flex;
+  flex-direction: column;
+  counter-reset: plate;
+  padding: clamp(1rem, 4vh, 3rem) 0 clamp(3rem, 8vh, 6rem);
+}
+
+.plates .tile {
+  position: relative;
+  counter-increment: plate;
+  width: min(86vw, 640px);
+  align-self: center;
+  margin: 0 0 clamp(96px, 17vh, 230px);
+}
+.plates .tile:nth-of-type(odd)  { align-self: flex-start; margin-left: 3.5vw; }
+.plates .tile:nth-of-type(even) { align-self: flex-end;  margin-right: 3.5vw; }
+
+.plates .tile img {
+  width: 100%;
+  height: auto;
+  transition: opacity 1.3s var(--ease-out),
+              transform 1.3s var(--ease-out),
+              filter 1.8s ease;
+}
+
+/* catalog label — a plate number etched beside each body */
+.plates .tile::before {
+  content: "Plate " counter(plate, decimal-leading-zero);
+  position: absolute;
+  top: -2.2em;
+  left: .05em;
+  font: 400 .58rem/1 var(--font-mono);
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: .85;
+  transition: opacity 1.2s ease .4s;
+}
+
+/* ambient bloom — light spilling from the plate into the void */
+.plates .tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    0 0 34px rgba(240, 230, 205, .09),
+    0 0 110px 20px rgba(212, 175, 55, .05),
+    0 0 240px 48px rgba(212, 175, 55, .028);
+  opacity: 0;
+  transition: opacity 2.6s ease .3s;
+}
+.plates .tile.is-lit::after,
+html:not(.js) .plates .tile::after { opacity: 1; }
+
+/* ignition — ember to full luminance when the plate enters the sky */
+.js .plates .tile:not(.is-lit) img {
+  opacity: 0;
+  transform: scale(.965);
+  filter: brightness(.22) saturate(.7);
+}
+.js .plates .tile:not(.is-lit)::before { opacity: 0; }
+
+.plates .tile:hover img {
+  filter: brightness(1.06);
+  transition-duration: .55s, .55s, .45s;
+}
+
+/* ─── II · the atlas — collections ────────────────────────────────────────── */
+/* Server emits (markup not ours):
+   <a class="collection-card" href="/c/…"><img class="collection-cover" …>
+   <span class="collection-caption">01 — NAME · COUNT</span></a> */
+
+.atlas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3.4rem;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.collection-card {
+  display: block;
+  overflow: hidden;
+  text-decoration: none;
+  transition: opacity 1s var(--ease-out), transform 1s var(--ease-out);
+}
+.js .collection-card:not(.is-lit) {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+.collection-cover {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  filter: brightness(.9);
+  transition: filter .9s ease, transform 1.4s var(--ease-out);
+}
+.collection-card:hover .collection-cover,
+.collection-card:focus-visible .collection-cover {
+  filter: brightness(1.02);
+  transform: scale(1.028);
+}
+
+.collection-caption {
+  display: block;
+  margin-top: 1.05rem;
+  font: 400 .64rem/1.7 var(--font-mono);
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.collection-card:hover .collection-caption,
+.collection-card:focus-visible .collection-caption { color: var(--gold-bright); }
+
+.all {
+  margin-top: clamp(4rem, 10vh, 7rem);
+  text-align: center;
+}
+.all a {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  letter-spacing: .08em;
+  text-decoration: none;
+  color: var(--starlight);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: .4rem;
+}
+.all a:hover { color: var(--gold-bright); border-bottom-color: var(--gold-dim); }
+.all .arr { font-family: var(--font-mono); font-size: .8em; color: var(--gold); }
+
+/* ─── III · field notes — about ───────────────────────────────────────────── */
+
+.seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  margin-bottom: 3rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: .22em;
+  text-indent: .22em;
+  color: var(--gold);
+}
+.seal-rule {
+  width: clamp(42px, 8vw, 84px);
+  height: 1px;
+  background: var(--hairline);
+}
+
+.bio { display: flex; justify-content: center; }
+.bio p {
+  max-width: 64ch;
+  font: 400 .74rem/2.15 var(--font-mono);
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: #C9C2B1;
+}
+.bio a { color: var(--starlight); text-underline-offset: 4px; }
+.bio a:hover { color: var(--gold-bright); }
+
+/* ─── colophon ────────────────────────────────────────────────────────────── */
+
+.colophon {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(212, 175, 55, .14);
+  padding: clamp(2.6rem, 6vh, 4rem) 1.25rem clamp(3rem, 7vh, 4.5rem);
+  text-align: center;
+}
+.signoff {
+  font: italic 400 .72rem/1.9 var(--font-mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.legal {
+  margin-top: 1.2rem;
+  font: 400 .6rem/1.9 var(--font-mono);
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--dim-2);
+}
+.coords {
+  margin-top: .35rem;
+  font: 400 .56rem/1.9 var(--font-mono);
+  letter-spacing: .3em;
+  color: var(--dim-2);
+}
+
+/* ─── scroll-reveal utility ───────────────────────────────────────────────── */
+
+.reveal { transition: opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out); }
+.js .reveal:not(.is-lit) {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* ─── load choreography keyframes ─────────────────────────────────────────── */
+
+/* `to` deliberately omits filter: the name animates toward its BASE
+   filter (the drop-shadow aura under @supports, none otherwise) and the
+   property is released after the entrance, so :hover ignition can
+   transition it. The from-list mirrors the base list shape (blur,
+   brightness, two drop-shadows at zero alpha) to stay interpolable. */
+@keyframes resolve {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+    filter: blur(20px) brightness(1.9)
+      drop-shadow(0 0 42px rgba(212, 175, 55, 0))
+      drop-shadow(0 0 90px rgba(212, 175, 55, 0));
+  }
+  to { opacity: 1; transform: none; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes spin {
+  to { transform: rotate(1turn); }
+}
+@keyframes plumb {
+  0%    { transform: scaleY(0); transform-origin: top; }
+  50%   { transform: scaleY(1); transform-origin: top; }
+  50.1% { transform-origin: bottom; }
+  100%  { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ─── desktop — the descent narrows and meanders ──────────────────────────── */
+
+@media (min-width: 900px) {
+
+  .plates .tile {
+    width: min(52vw, 600px);
+    align-self: center;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .plates .tile:nth-of-type(4n) {
+    align-self: flex-start;
+    margin-left: 8vw;
+    width: min(42vw, 500px);
+  }
+  .plates .tile:nth-of-type(4n+1) {
+    align-self: flex-end;
+    margin-right: 9vw;
+    width: min(45vw, 540px);
+  }
+  .plates .tile:nth-of-type(4n+2) {
+    width: min(64vw, 780px);
+  }
+  .plates .tile:nth-of-type(4n+3) {
+    align-self: flex-start;
+    margin-left: 15vw;
+    width: min(37vw, 440px);
+  }
+
+  .atlas { grid-template-columns: repeat(12, 1fr); gap: 6.5rem 2rem; }
+
+  .collection-card:nth-of-type(1) { grid-column: 1 / -1; }
+  .collection-card:nth-of-type(1) .collection-cover { aspect-ratio: 21 / 9; }
+
+  .collection-card:nth-of-type(4n+2) { grid-column: 1 / span 7; }
+  .collection-card:nth-of-type(4n+3) { grid-column: 8 / span 5; margin-top: 9vh; }
+  .collection-card:nth-of-type(4n+3) .collection-cover { aspect-ratio: 1 / 1; }
+  .collection-card:nth-of-type(4n)   { grid-column: 2 / span 5; }
+  .collection-card:nth-of-type(4n) .collection-cover { aspect-ratio: 1 / 1; }
+  .collection-card:nth-of-type(4n+1):nth-of-type(n+2) { grid-column: 6 / span 7; margin-top: 5vh; }
+}
+
+/* parallax hint — only where the drift actually runs */
+@media (min-width: 900px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .plates .tile { will-change: transform; }
+}
+
+/* ─── small screens ───────────────────────────────────────────────────────── */
+
+@media (max-width: 560px) {
+  .topbar { padding: .9rem 1.1rem; }
+  .site-nav { gap: .95rem; }
+  .site-nav a { font-size: .56rem; letter-spacing: .22em; }
+  .brand { font-size: 1.2rem; }
+
+  .name { font-size: clamp(2rem, 13.5vw, 4.4rem); }
+  .orbit { width: 150vmin; opacity: .8; }
+
+  .plates .tile::before { font-size: .52rem; letter-spacing: .28em; top: -2.4em; }
+
+  .atlas { gap: 3rem; }
+  .collection-caption { font-size: .58rem; letter-spacing: .2em; }
+
+  .bio p { font-size: .68rem; letter-spacing: .11em; line-height: 2.05; }
+
+}
+
+/* ─── reduced motion — everything visible, everything still ───────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;   /* entrances land at once, not on cue */
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+  }
+  .js .plates .tile:not(.is-lit) img,
+  .js .plates .tile:not(.is-lit)::before,
+  .js .reveal:not(.is-lit),
+  .js .collection-card:not(.is-lit) {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .plates .tile::after { opacity: 1 !important; }
+  .plates .tile { transform: none !important; will-change: auto !important; }
+  .orbit { animation: none !important; opacity: .3; }
+  .stars, .stars::after { animation: none !important; }
+  .cue-line { animation: none !important; }
+}

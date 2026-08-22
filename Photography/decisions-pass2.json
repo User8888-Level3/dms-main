@@ -1,0 +1,483 @@
+{
+  "generated_at": "2026-04-23T19:54:26.832203+00:00",
+  "heuristic": {
+    "exact": "not-backup path, shortest path, oldest mtime",
+    "similar_max_cluster_size": 2,
+    "similar_cross_year": "skipped (possible pHash false positive)"
+  },
+  "count": 58,
+  "decisions": {
+    "s10680": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10683,
+      "delete_ids": [
+        10680
+      ]
+    },
+    "s14142": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14142,
+      "delete_ids": [
+        14137
+      ]
+    },
+    "s10765": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10767,
+      "delete_ids": [
+        10765
+      ]
+    },
+    "s14097": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14097,
+      "delete_ids": [
+        14119
+      ]
+    },
+    "s13360": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 13365,
+      "delete_ids": [
+        13360
+      ]
+    },
+    "s10879": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10879,
+      "delete_ids": [
+        10867
+      ]
+    },
+    "s14385": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14365,
+      "delete_ids": [
+        14385
+      ]
+    },
+    "s10699": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10702,
+      "delete_ids": [
+        10699
+      ]
+    },
+    "s10756": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10759,
+      "delete_ids": [
+        10756
+      ]
+    },
+    "s10772": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10772,
+      "delete_ids": [
+        10769
+      ]
+    },
+    "s10798": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10800,
+      "delete_ids": [
+        10798
+      ]
+    },
+    "s10720": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10723,
+      "delete_ids": [
+        10720
+      ]
+    },
+    "s10744": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10744,
+      "delete_ids": [
+        10730
+      ]
+    },
+    "s14276": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14276,
+      "delete_ids": [
+        14264
+      ]
+    },
+    "s10675": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10675,
+      "delete_ids": [
+        10673
+      ]
+    },
+    "s14314": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14314,
+      "delete_ids": [
+        14353
+      ]
+    },
+    "s10745": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10747,
+      "delete_ids": [
+        10745
+      ]
+    },
+    "s14388": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14366,
+      "delete_ids": [
+        14388
+      ]
+    },
+    "s10679": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10682,
+      "delete_ids": [
+        10679
+      ]
+    },
+    "s10661": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10665,
+      "delete_ids": [
+        10661
+      ]
+    },
+    "s11605": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 11610,
+      "delete_ids": [
+        11605
+      ]
+    },
+    "s14315": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14315,
+      "delete_ids": [
+        14347
+      ]
+    },
+    "s10508": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10508,
+      "delete_ids": [
+        10510
+      ]
+    },
+    "s10550": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10550,
+      "delete_ids": [
+        10548
+      ]
+    },
+    "s10498": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10499,
+      "delete_ids": [
+        10498
+      ]
+    },
+    "s12387": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 12387,
+      "delete_ids": [
+        12383
+      ]
+    },
+    "s5008": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 5009,
+      "delete_ids": [
+        5008
+      ]
+    },
+    "s14328": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14328,
+      "delete_ids": [
+        14332
+      ]
+    },
+    "s14126": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14126,
+      "delete_ids": [
+        14149
+      ]
+    },
+    "s10507": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10507,
+      "delete_ids": [
+        10503
+      ]
+    },
+    "s10794": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10799,
+      "delete_ids": [
+        10794
+      ]
+    },
+    "s23920": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 23944,
+      "delete_ids": [
+        23920
+      ]
+    },
+    "s10546": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10549,
+      "delete_ids": [
+        10546
+      ]
+    },
+    "s10504": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10504,
+      "delete_ids": [
+        10502
+      ]
+    },
+    "s14386": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14386,
+      "delete_ids": [
+        14360
+      ]
+    },
+    "s10968": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10994,
+      "delete_ids": [
+        10968
+      ]
+    },
+    "s14125": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14125,
+      "delete_ids": [
+        14144
+      ]
+    },
+    "s9380": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 9380,
+      "delete_ids": [
+        9378
+      ]
+    },
+    "s10671": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10672,
+      "delete_ids": [
+        10671
+      ]
+    },
+    "s10721": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10722,
+      "delete_ids": [
+        10721
+      ]
+    },
+    "s14290": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14303,
+      "delete_ids": [
+        14290
+      ]
+    },
+    "s10697": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10700,
+      "delete_ids": [
+        10697
+      ]
+    },
+    "s10741": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10741,
+      "delete_ids": [
+        10739
+      ]
+    },
+    "s10703": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10706,
+      "delete_ids": [
+        10703
+      ]
+    },
+    "s13538": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 13547,
+      "delete_ids": [
+        13538
+      ]
+    },
+    "s10387": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10389,
+      "delete_ids": [
+        10387
+      ]
+    },
+    "s10691": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10692,
+      "delete_ids": [
+        10691
+      ]
+    },
+    "s11652": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 11654,
+      "delete_ids": [
+        11652
+      ]
+    },
+    "s11039": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 11048,
+      "delete_ids": [
+        11039
+      ]
+    },
+    "s11047": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 11047,
+      "delete_ids": [
+        11040
+      ]
+    },
+    "s10505": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10509,
+      "delete_ids": [
+        10505
+      ]
+    },
+    "s10540": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10540,
+      "delete_ids": [
+        10534
+      ]
+    },
+    "s14359": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14392,
+      "delete_ids": [
+        14359
+      ]
+    },
+    "s13356": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 13358,
+      "delete_ids": [
+        13356
+      ]
+    },
+    "s11614": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 11614,
+      "delete_ids": [
+        11604
+      ]
+    },
+    "s10519": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10519,
+      "delete_ids": [
+        10514
+      ]
+    },
+    "s10553": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 10553,
+      "delete_ids": [
+        10551
+      ]
+    },
+    "s14138": {
+      "action": "apply",
+      "kind": "similar",
+      "keeper_id": 14140,
+      "delete_ids": [
+        14138
+      ]
+    }
+  },
+  "summary": {
+    "total_groups": 58,
+    "applied_exact": 0,
+    "applied_similar": 58,
+    "skipped_similar_large": 2928,
+    "files_to_delete": 58,
+    "bytes_to_reclaim": 683405498
+  }
+}

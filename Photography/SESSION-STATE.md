@@ -1,7 +1,372 @@
 # Photography Index — Session State
 
-**Last updated:** 2026-07-16 (dashboard repaired + "Light Table" redesign shipped)
+**Last updated:** 2026-08-21 (THE INSTRUMENT — the /work overture — LIVE)
 **Phase:** Feature-complete. Ongoing operations only.
+
+---
+
+## 2026-08-21 — THE INSTRUMENT: a 3D Canon EOS opens /work — commit 904da52 (deploy repo)
+
+**Harv's brief:** make /work "very creative" like the landing: a full-page
+hero with a Canon camera that assembles, dismantles, reassembles and
+rotates in 3D, showing the mechanics inside "in absolute detail" (the
+watch-movement / AirPods-exploded-view genre, refs: awwwards IYO, Apple
+AirPods Pro, Ciechanowski's Mechanical Watch); click a button → zoom into
+the camera, show the components, then a beautiful picture (sunset/moon);
+keep the colour scheme; don't touch the main page. He uses Canon.
+
+**What shipped (live at https://harvbalu.net/work):**
+- `static/instrument.js` (~1,290 lines, vanilla, no library): a **painter's-
+  algorithm 3D renderer on 2D canvas** + a Canon EOS Rebel-class model
+  built in millimetres (EF flange 44 mm: mount z=18, sensor z=−26; 16
+  labelled parts incl. 7-blade iris, pentamirror, two-curtain shutter,
+  APS-C CMOS, vari-angle LCD). Drawn in the Observatory grammar: ghost
+  gold shells, near-void internals, starlight glass with specular glints,
+  the sensor in gold. **Scroll-scrubbed runway** (560vh / 480vh mobile,
+  sticky stage): assemble (time) → turn → explode+labels → close → swing
+  to the front → dolly → **enter the lens as the light** (iris opens,
+  mirror lifts, first curtain drops, 9 rays converge) → sensor ignites →
+  the photograph scales out of the sensor rect to fill the stage. "Look
+  inside" tweens the scroll (~14s); drag turns; readout names each phase.
+- Photograph = the **gold moon** `d7bc3b68…` (Cosmology, 2016 · Oct 17),
+  `config.INSTRUMENT_PHOTO_SHA1/EPOCH`, bundled into `/img/` by the exporter
+  (21 landing-critical images now). Server (`_page_work`) + exporter both
+  pass `$instrument_photo` / `$instrument_epoch` (template parity kept).
+- New `stage_and_export.py`: exports with the NAS UNMOUNTED — stages
+  derivatives from `~/Sites/harv-portfolio/img/` + fetches missing ones
+  from the WP host, rebinds `config.THUMB_DIR/DISPLAY_DIR`. **Use this
+  instead of `export_static.py` from now on** (the mount is unreliable).
+- CSS section "THE INSTRUMENT" appended to `static/style.css`; `.page--meridian`
+  padding moved onto `.obs-head`; reduced-motion = unpinned still of the
+  exploded view + the moon as a plain plate; no-JS hides the section.
+- DESIGN.md: component + layout + motion entries.
+
+**Review workflow (17 agents, 5 lenses + skeptics) confirmed 12, all fixed:**
+reduced-motion bitmap measured from the stage (squashed 48%) → measure the
+CANVAS rect · label collisions (cross-side, single-pass) → one rect list,
+nearest free slot, bounded · drag accepted while masked by the swing and
+leaking on scroll-back → input-gated by `S.swing` · Space on the cue
+restarted the play (keydown stop, keyup click) → cue click toggles, cue
+keys skipped by the stopper, cue blurs on start, Escape/Tab/focusin stop ·
+cue focusable while invisible → focusability from painted opacity, blur
+when it fades · no idle gate (full redraw at 60–120 fps at rest) → dirty
+key in tick(), 0 fps at rest · back/reload mid-runway replayed the
+scatter → assembly/chrome are progress-aware (p>.03 = assembled) ·
+log/epoch overprint at p .95–1 → sequenced.
+
+**Traps (remember these):**
+- ⭐⭐ **A CSS `animation` on opacity OVERRIDES inline `style.opacity`** — the
+  chrome entrances had to move into the script (or the cue never faded).
+- ⭐⭐ **The in-app browser pane reports `document.hidden=true` and never
+  fires IntersectionObserver/rAF for this page** — it cannot verify canvas
+  work at all; Playwright (system python3) against localhost:8771 /
+  harvbalu.net is the verification path. Hidden-tab gating is also
+  redundant (browsers stop rAF themselves) — don't gate on it.
+- ⭐ `html { scroll-behavior: smooth }` makes `scrollTo(0, y)` animate — tests
+  must use `behavior:'instant'`; the autoplay forces `scrollBehavior=auto`.
+- ⭐ The starfield twinkles → md5 screenshot compares are useless; use a
+  thresholded pixel diff (or hide `.stars`) when asserting "no change".
+- Painter's sort + translucent fills: lathe profiles must be traced CCW in
+  the (r,z) half-plane for outward normals; glass is double-sided.
+- Launch config `portfolio-static` (port 8771, Photography/.claude) serves dist.
+
+**Open:** source changes live in the Drive working tree (uncommitted in the
+ClaudeCode repo — Drive's track record says commit). Alternate climax photos
+if Harv prefers: Alviso sunset `a2b30b93…` (already bundled), starlight moon
+`9bac8c31…`. Optional: a hood/filter-thread detail, per-part hover highlights.
+
+---
+
+## 2026-08-12 (2) — the sheen (animated gradient name) — commit 5c42acc
+
+**Harv's brief:** pasted a React/framer-motion "AnimatedText" gradient-
+shine component and asked for it on "HARV BALU," with a free hand to fit
+the design. Ported the *effect* to pure CSS in `landing.css` (site is
+static, not React), retuned from a 1s black/white flash to the
+Observatory's register: every **10s** a narrow band of **heated gold**
+with a trailing afterglow sweeps the starlight letters left→right
+(`name-sheen`, 400% background, 2.6s delay, rest = pure starlight).
+`.name:hover` now **ignites** (brightness 1.04 + heated-gold aura, .7s)
+per the site's ignition grammar.
+
+**Traps engineered around (remember these):**
+- ⭐ `text-shadow` paints OVER gradient-clipped text in WebKit — the
+  name's gold halo moved to `drop-shadow` filters inside the
+  `@supports (background-clip: text)` block.
+- ⭐ `resolve`'s `to` keyframe used to pin `filter` forever (fill both);
+  it now **omits filter** so the property releases to base after the
+  entrance and hover can transition it. The `from` filter list mirrors
+  the base list shape (blur, brightness, 2× drop-shadow at zero alpha)
+  to stay interpolable.
+- Paint-only constraint: NEVER animate the name's geometry (size,
+  spacing) — the void-water canvas measures the DOM rect for the mirror.
+- `.name::selection` resets fill to void so selected glyphs don't stay
+  gradient over the gold highlight.
+- Reduced motion: global .01ms/1-iteration reset lands the sheen on its
+  base `background-position: 100%` = solid starlight. Fallback browsers
+  keep the original solid name + text-shadow.
+
+Verified local (band sweep across two screenshots, hover bloom, 375px
+mobile, zero console errors) and live (index references
+`landing.css?v=de86f756bf`, `name-sheen` ×2 in served CSS). DESIGN.md
+Display entry + Motion Summary updated. Impeccable gradient-text
+finding classified intentional (user-requested effect); the 5 font-size
+findings are the standing 560px-compaction set.
+
+---
+
+## 2026-08-12 (1) — THE VOID breathes (ambient water) — commit f3f7eb7
+
+**Harv's brief:** the water is beautiful but you have to click around to
+get the emotion; make it wavier and alive on its own — "do some creative
+stuff." Six ambient layers added to the void-water canvas, all pure
+functions of t (so the reduced-motion still inherits them), all inside
+the Only-Light Rule:
+
+1. **Reflection swell** — sway ~2× wider, a third wave traveling
+   shoreward, bands of light climbing the alpha (envelope × .8–1.1).
+2. **Wind** — 9 bowed glint streaks (≤ .055) drifting/breathing, wrapped
+   off-canvas by a padded span.
+3. **Mirrored sky** — 26 twinkling starlight sparks (≤ .16) adrift on a
+   slow current, same padded-span wrap.
+4. **Moonglades** — each orbiting body lays a broken wobbling light path
+   on the pool while above the horizon (≤ .05).
+5. **Rain + groundswell** — ambient drop every 1.1–2.8s anywhere on the
+   pool (12% heavy, was 2.6–5.2s near the name); soft wide swell ring
+   (life 6s, ≤ .07) every 9–15s.
+6. **Breath** — halo (8.5s) and resting ring (alpha + geometry) oscillate.
+
+**Review workflow (13 agents, 5 lenses) confirmed 2 findings, both
+fixed pre-ship:** `evictRipple()` spares `soft` groundswells from the
+22-cap shift() so pointer play can't delete one mid-fade in a single
+frame · sparks map to a padded span `(W+12)-6` like the streaks so a lit
+spark never teleports across the pool at the wrap seam.
+
+- Verified local (desktop + 375px mobile, zero console errors) and live:
+  HTTP 200, void-water ×2, all layer markers present, 20 `/img/` srcs,
+  zero unresolved `$vars`. DESIGN.md Void section + Motion Summary updated.
+- Launch config `portfolio-dist-local` (port 8128) added to the Web
+  workspace's `.claude/launch.json` for local dist preview.
+
+---
+
+## 2026-08-09 PM (2) — THE VOID hero SHIPPED — commit a5b7e1f
+
+**Harv's brief:** the distilled hero "doesn't look right" alone; keep the
+orbit ring, add "a planets thing," and make the floor Stranger Things'
+Void: a shallow pool of black water that ripples. Mobile friendly.
+
+- **`<canvas class="void-water">`** (z1, under ring z2 / helm z3), painted
+  by the landing's last script block: waterline at the name's baseline
+  (the name STANDS on the pool), sliced wobbling reflection sampled from
+  an offscreen canvas text render, gold halo pooling, resting ellipse,
+  ambient + pointer/touch ripples (perspective ellipses), three bodies
+  orbiting the name (21/34/52s, gold/starlight tones only), mirrored in
+  the pool. Cue moved from flow to absolute bottom (pool's far edge).
+- **Review workflow (13 agents) confirmed 9 findings, all fixed:** canvas-
+  measured reflection so no `$hero_name` ever clips + `.name` nowrap with
+  a 2rem narrow floor (280px Galaxy Fold verified) · mmReduce change
+  listener with a self-halting RAF loop · ctx.filter blur fallback for
+  Safari ≤ 17 (five offset passes) · reflection capped above the cue on
+  short viewports · name selectable again (`pointer-events: auto` vs the
+  helm's none) · animationend re-measure repaints the reduced still ·
+  ⭐ **the reduced-motion global rule zeroed durations but NOT
+  `animation-delay`** — delayed entrances (topbar 2.3s, cue, canvas) sat
+  invisible; `animation-delay: 0s !important` added.
+- DESIGN.md updated (Void component, Layout, Z-ladder, Motion Summary).
+- Live verified: `?v=a98496e355`, void-water present, 20 `/img/` srcs, no
+  console errors desktop or mobile, touch ripple works, 0 overflow at
+  390px and 280px. Detector: zero findings from the changed lines.
+
+---
+
+## 2026-08-09 PM — landing hero DISTILLED (name + orbit only) — commit 630ce53
+
+**Harv's brief** (from the Web workspace session, matching his harvinder.dscloud.me
+intro): "remove the pictures around it, just have my name, keep the circular
+thing," Descend cue stays, photos on scroll. Ran under the impeccable skill
+(distill) against the committed Observatory world.
+
+- **Hero = name + orbit ring + Descend cue.** Removed: the three desktop
+  hero-body plates (tile--1/2/3 absolutes + dim/flare rules), overline,
+  tagline, tally. Cue retimed 2.55s → 2.3s (arrives with the topbar, one
+  beat after the name resolves). The 900px meander rules now cover ALL
+  tiles (dropped the `:nth-of-type(n+4)` gate), so plates 01–03 open the
+  descent column; template JS lost the mmWide ignite branch.
+- **DESIGN.md trued up** (Label tracking list, Landing layout bullet,
+  Z-ladder, Plate ignition, Motion Summary choreography). Detector findings
+  on landing.css are the SAME 13 incumbent lines as before the edit (prose-
+  documented sizes the frontmatter ramp misses + 2 CSS-file "broken-image"
+  mis-fires) — classified intentional, zero findings from the changed lines.
+- ⭐ **The `photo` SMB share refused to mount** (AppleScript -5014, twice;
+  the `web` share mounted fine) → export bundled 0 landing images and fell
+  back to WP-host URLs, which would break the offline-safe front door.
+  **Fix that keeps the exporter honest:** stage the 20 live derivatives out
+  of `~/Sites/harv-portfolio/img/` into the NAS `.portfolio` layout in a
+  temp dir, then drive `export_static.main()` with `config.THUMB_DIR` /
+  `DISPLAY_DIR` rebound to the stage (they are read-at-call module globals).
+  Result: `bundled 20 landing-critical images`, srcs back to `/img/`.
+- **Deploy:** rsync dist → `~/Sites/harv-portfolio` with `--exclude` for
+  .git/.gitignore/.vercel/README.md/robots.txt (repo-only files a bare
+  `--delete` would kill) → commit `630ce53` → push → auto-deploy. Live
+  verified: `?v=a669e931c1` CSS, 0 overline/tagline/tally, 20 `/img/` srcs,
+  0 tile--1 rules in served CSS, no console errors, Playwright shots of
+  hero/descent/mobile.
+
+---
+
+## 2026-08-05 PM — "MERIDIAN" redesign SHIPPED (impeccable skill, full loop)
+
+**Harv's brief:** camera photos only (AI out "for now"), /work "more animatic,
+smooth, dramatic," obvious next/prev in the viewer, free hand, use impeccable.
+
+- **Camera-only:** `EXCLUDED_FOLDERS = {"AI Generated"}` in export_static.py —
+  the DB and admin curation untouched; the exporter filters. Site = **240
+  frames · 6 collections · epochs 2003–2023**. ⭐ Cosmology VERIFIED camera
+  (Canon Rebel XT/T5i EXIF) — it is astrophotography, NOT AI; only the
+  "AI Generated" folder (210 Midjourney-style PNGs) is excluded. About copy
+  overridden in the exporter (ABOUT_HTML_STATIC) to drop the AI mention.
+- **/work = THE MERIDIAN** (impeccable concept-seed assigned candidate 7/7,
+  seed 6f9fe34d): collections as survey stations on one gold line that draws
+  with scroll (transform-only, rAF), newest last-observation first, descending
+  to a FIRST LIGHT terminus. Station = plate + Italiana name + "Chart N ·
+  n frames · epoch" data line. Chart numbers match collection pages.
+- **Collection pages = CHARTS**: Observatory voice (Italiana + Fragment Mono
+  via `body.inner` var re-pointing — cream tokens stay for admin), ignition
+  ember→lit reveals, hover bloom, gold return arrow.
+- **Lightbox v2**: gold tabular counter "042 / 119", epoch caption, drawn
+  one-stroke SVG chevrons/×, direction-aware two-layer crossfade travel,
+  swipe, side click-zones, arrow keys, focus trap, reduced-motion = instant.
+- **Server parity:** server.py `_page_work`/_page_collection emit the same
+  meridian/chart markup (templates shared). Compile-checked.
+- ⭐ **Asset URLs are content-hashed** (`?v=<sha1[:10]>`) by the exporter —
+  vercel.json caches /static/ 1h, so unhashed redeploys could pair new HTML
+  with stale CSS. This also defeats the browser-pane's cache wedge.
+- ⭐⭐ **rAF STARVES in throttled contexts** (the in-app pane wedges its
+  compositor; background tabs too) — never gate state-correctness on
+  requestAnimationFrame. Use `void el.offsetWidth` forced reflow to commit
+  transition origins. Found because the pane froze mid-verify.
+- ⭐ **Impeccable finish loop ran fully**: detector (0 findings ×2), fresh-
+  context reviewer (shipped agent types absent → degraded reference in a
+  general-purpose agent), 5 material findings ALL real (travel resting
+  34px off-center — from-* classes later in cascade than .is-on; unstyled
+  colophon; no focus trap; reduced-motion 560ms occlusion; topbar/title
+  interleave), fixed in one batch, redeployed, verdict pass + DESIGN.md
+  documenter spawned. Playwright (system python3) shoots the LIVE site for
+  screenshot files — the pane can't produce files.
+- Commits: 447b160 (redesign) · c5ebd79 (review fixes). Live at
+  https://harvbalu.net/work — verify with `?x=$RANDOM` cache-buster.
+
+---
+
+## 2026-08-05 — portfolio/ DEPLOYED: https://harvbalu.net
+
+**Custom domain LIVE** (GoDaddy-registered 2026-08-05, DNS stays at GoDaddy —
+nameservers NOT moved, so MX/email remain addable there later):
+
+| Record | Name | Value |
+|---|---|---|
+| A | `@` | `216.198.79.1` (was GoDaddy parking) |
+| CNAME | `www` | `f2b575ea1c46149a.vercel-dns-017.com.` (was `harvbalu.net.`) |
+
+Untouched: both NS, SOA, `_domainconnect`, `_dmarc` TXT. **No MX existed**, so
+nothing email-related was at risk. `www` is a **308 redirect → apex** (set via
+API; Vercel defaults to serving BOTH, which would be duplicate content).
+Let's Encrypt cert auto-issued (CN=harvbalu.net, expires 2026-11-03).
+Vercel reports `misconfigured: false` for both names.
+⭐ Vercel's rank-1 advice lists TWO apex IPs but **one A record is enough** —
+it reported configured with just `216.198.79.1`.
+⭐ This CLI version has no "add domain to project" command
+(`vercel domains add` is account-level) → use the REST API
+`POST /v10/projects/<project>/domains` with the CLI's own token from
+`~/Library/Application Support/com.vercel.cli/auth.json`.
+⚠️ After the change the Mac's local resolver kept the old parked IPs for a
+while though 1.1.1.1/8.8.8.8 had updated — verify with
+`curl --resolve harvbalu.net:443:216.198.79.1` instead of assuming breakage.
+
+Original vercel.app URL still works: https://harv-portfolio.vercel.app
+
+---
+
+## 2026-08-05 — portfolio/ deployment details
+
+**Dedicated accounts, kept strictly separate from all realtor infra:** GitHub
+`harvbalu-Photo` (private repo `harv-portfolio`) + Vercel `harvbalu-photo`
+(scope `harvbalu-photos-projects`). No contact info anywhere on the site
+(Harv's call — nav is Work/About only; contact section removed from
+`templates/index.html`).
+
+- **Pipeline (all in `portfolio/`):** `export_static.py` renders /, /work, 7
+  `/c/<ascii-slug>` pages + 404 through the SAME templates/queries as the live
+  server → `dist/`; `publish_images.py` copies the 898 public derivatives
+  (450 photos × thumb+display, 83 MB) from `/Volumes/photo/.portfolio/` straight
+  into `/Volumes/web_packages/wordpress/wp-content/uploads/portfolio/` over SMB
+  (bypasses Wordfence's ≥7s REST throttle AND keeps the WP media library clean).
+  Build metadata → `portfolio/build/manifest.json` (not deployed).
+- **Hybrid image hosting (Harv's design):** the 21 landing-critical images
+  (14 collage + 7 covers, 2 MB) are BUNDLED into the deploy at `/img/` so the
+  landing + /work render even when the home Synology (~90% uptime) is offline;
+  collection grids embed from `harvinder.dscloud.me/blog/wp-content/uploads/portfolio/`.
+- **Deploy repo:** `~/Sites/harv-portfolio` (rsynced OUT of Google Drive —
+  Vercel hangs on Drive paths). Commits authored as
+  `Harv Balu <harvbalu-Photo@users.noreply.github.com>`.
+  ⭐ gh's credential helper only serves the ACTIVE account, so the repo has a
+  LOCAL `credential.helper` that runs `gh auth token -u harvbalu-Photo` at push
+  time — pushes work while `User8888-Level3` stays the CLI default (restored).
+- **Update flow:** re-run `export_static.py` (+ `publish_images.py` if photos
+  changed) → rsync `dist/` → `~/Sites/harv-portfolio` → commit → **`git push`.
+  That's it — auto-deploy handles production.** (Manual escape hatch:
+  `vercel deploy --prod --yes --scope harvbalu-photos-projects` from that dir.)
+- ✅ **Auto-deploy CONNECTED + PROVEN** (2026-08-05): pushing `robots.txt` with
+  no CLI deploy produced a Ready Production deployment 23s later serving that
+  file. ⭐ `vercel git connect` from the CLI FAILS on a fresh private repo —
+  the fix is the dashboard: project → Settings → Git → pick GitHub → **Install**
+  (installs the Vercel GitHub App on harvbalu-Photo) → **Connect**.
+- ⚠️ gh device-login from a session: `printf '\n' | script …` does NOT deliver
+  Enter to gh — use `expect` (spawn → expect "Press Enter" → send \r).
+
+---
+
+## 2026-07-30 — portfolio/: "Observatory" redesign + public-hosting auth + mount resilience
+
+- **Landing REDESIGNED** (Harv rejected the cream Collienne homage): now "Observatory" —
+  #050505 void, Italiana/Fragment Mono, gold orbit ring, plates igniting on descent.
+  Won a 3-designer / 3-judge panel 3-0 (candidates preserved in `portfolio/candidates/`,
+  old landing in `candidates/_rejected-cream/`). Inner public pages harmonized to the
+  void via scoped body-class token overrides in style.css (admin stays cream).
+- **Public-hosting auth SHIPPED + tested**: `PORTFOLIO_PUBLIC=1` (distrust localhost)
+  + `PORTFOLIO_ADMIN_TOKEN` → /admin/login (HttpOnly cookie, 10/10min throttle,
+  logout), `PORTFOLIO_BASE_URL`, global `Referrer-Policy: same-origin`. README §Hosting.
+- **Mount resilience**: macOS strands dead stubs at /Volumes/photo and remounts at
+  photo-1 — config._resolve_mount() now auto-detects; DB stores canonical
+  /Volumes/photo paths, translated at runtime (canon_path/real_path).
+- Visitor-facing filenames removed everywhere (lightbox/share/markup) — date-only.
+- ⚠️ Browser-pane gotcha again: native scroll wedges it; JS-scroll screenshots go
+  stale until a real re-navigation. Headless Chrome full-page shots inflate vh gaps.
+- OPEN: Harv reviews new landing · hosting home decision (Synology proxy vs n8n VPS)
+  · contact email still realtor address · still uncommitted in git.
+
+---
+
+## 2026-07-23 — NEW: `portfolio/` — HARV BALU portfolio site (separate app)
+
+A second, independent app now lives in `Photography/portfolio/` (own SPEC.md + README.md —
+**read those first**; do not confuse with the photo_index dashboard above).
+
+- **What:** gregorcollienne.com-style public portfolio + admin panel + expiring share links
+  for the `/Volumes/photo` NAS share (NOT Pictures-Vol3). Stdlib server on **127.0.0.1:8770**
+  (`Portfolio.command`), SQLite at `portfolio/data/portfolio.db` (gitignored, rebuildable),
+  derivatives on-NAS at `/Volumes/photo/.portfolio/`.
+- **Privacy model (tested end-to-end):** default private; per-FOLDER-membership rows (same
+  content in N folders = N rows, one visibility each; content serves if ANY row public);
+  content also living in Family/Customers/PhotoLibrary is never auto-published
+  (`SENSITIVE_FOLDERS` + `_demote_sensitive`, demoted 112 on first full index).
+  Share tokens are photo-bound, expire (24h/7d/30d/custom/never), revocable.
+- **State:** 3,824 rows indexed (3 pre-existing corrupt Family JPEGs skipped), 450 public,
+  7 public collections. Identity: HARV BALU, Instagram dropped, contact email = realtor
+  address pending Harv's "decide later".
+- **⚠️ Before any public hosting:** flip `ALLOW_LOCALHOST_ADMIN=False` + set `ADMIN_TOKEN`
+  + real `BASE_URL` + HTTPS — see README "Before hosting" section.
 
 ---
 
